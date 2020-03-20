@@ -28,7 +28,7 @@ namespace AutoMatcherProject
             // _scheduler = QuartzInstance.Instance;
             _scheduler = QuartzInstance.Instance;
         }
-
+       //test
         public IConfiguration _config { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
