@@ -1,0 +1,60 @@
+﻿@model AutoMatcherProject.ViewModels.LoginViewModel
+@{
+    ViewData["Title"] = "Login";
+}
+<!doctype html>
+<html lang="en">
+<head>
+    <link href="~/css/bootstrap-social.css" rel="stylesheet"> <!--load all styles -->
+    <link href="~/css/bootstrap.css" rel="stylesheet">
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/js/all.min.js">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>@ViewBag.Title</title>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
+                <div class="card card-signin my-5">
+                    <div class="card-body">
+                        <h5 class="card-title text-center">Sign In</h5>
+                        <form asp-action="login" asp-route-returnUrl="@Model.ReturnUrl" class="form-signin">
+                            <div class="form-label-group">
+                                <input asp-for="Email" type="email" id="inputEmail" class="form-control" placeholder="Email address" required autofocus>
+                                <label asp-for="Email"></label>
+                                <span asp-validation-for="Email"></span>
+                            </div>
+
+                            <div class="form-label-group">
+                                <input asp-for="Password" type="password" id="inputPassword" class="form-control" placeholder="Password" required>
+                                <label asp-for="Password"></label>
+                                <span asp-validation-for="Password"></span>
+                            </div>
+
+                            <div class="custom-control custom-checkbox mb-3">
+                                <input asp-for="RememberMe" type="checkbox" class="custom-control-input" id="customCheck1">
+                                <label asp-for="RememberMe">
+                                    <input asp-for="RememberMe"/>
+                                    @Html.DisplayNameFor(m=>m.RememberMe)
+                                </label>
+                            </div>
+                            <button class="btn btn-lg btn-primary btn-block stext-uppercase" type="submit">Sign in</button>
+                            <hr class="my-4">
+                        </form>
+                        <form asp-action="ExternalLogin" asp-controller="Account" asp-route-returnUrl="@Model.ReturnUrl">
+                            <div>
+                                @foreach (var provider in Model.ExternalLogins)
+                                {
+                                <button class=" btn-lg btn-@provider.Name.ToLower() btn-block text-uppercase" type="submit" value="@provider.Name" name="provider"><i class="fa fa-@provider.Name.ToLower()-f mr-2"></i> Sign in with @provider.Name</button>
+                                }
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
