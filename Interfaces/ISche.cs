@@ -8,7 +8,8 @@ namespace Interfaces
 {
     public interface ISche
     {
-        public Task Schedule(int messageId, DateTime time, int likes, Service service, IdentityUser user);
-        public Task StartSchedule(int messageId, int likes, DateTime time, Service service);
+        public Task Schedule(string userId, DateTime time, int likes, Service service, IdentityUser user);
+        public Task StartSchedule(string userId, int likes, DateTime time, Service service);
+        public Task DailyCleanUp(DateTime time);
     }
 }

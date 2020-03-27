@@ -16,11 +16,13 @@ namespace QueuesImpl
         private IModel _channel;
         private readonly IBotFactory _factory;
         private IConsumeSchechuler _scheduler;
+        private ICredentialSaver _context;
 
-        public RabbitMQImpl(IBotFactory fac, IConsumeSchechuler scheduler)
+        public RabbitMQImpl(IBotFactory fac, IConsumeSchechuler scheduler, ICredentialSaver context)
         {
             _factory = fac;
             _scheduler = scheduler;
+            _context = context;
         }
 
         public void StartListening()
@@ -31,7 +33,12 @@ namespace QueuesImpl
 
             EventingBasicConsumer consumer = new EventingBasicConsumer(_channel);
 
-            
+            _channel.QueueDeclare(queue: "messages",
+                                 durable: false,
+                                 exclusive: false,
+                                 autoDelete: false,
+                                 arguments: null);
+
             consumer.Received += async (model, ea) =>
             {
                 Console.WriteLine("waiting for queue");
@@ -40,20 +47,28 @@ namespace QueuesImpl
                 var message = JsonConvert.DeserializeObject<MessageWithoutUser>(msg);
                 Service utilService = message.Service;
                 IBot bot = _factory.GetBot(utilService);
-                var _result = bot.ExecuteLikes(message.MessageId, message.UserId, message.Likes, utilService, message.Time);
+                var user = GetUserNamePassword(message.UserId);
+                var cookie = bot.Login(user.Username, user.Password, message.UserId);
+                var cookieExist = _context.GetCookie(message.UserId, message.Service);
+
+                if (cookieExist == null)
+                {
+                    _context.SaveSessionId(cookie);
+                }
+                var _result = bot.ExecuteLikes(message.MessageId, message.UserId, message.Likes, message.Time,cookie.SessionId);
 
                 if (_result > 0)
                 {
                     await _scheduler.StartSchedule(message.MessageId, _result, DateTime.MinValue, utilService);
                     Console.WriteLine($"{_result} likes left");
                 }
-
+                bot.ShutDown();
 
             };
-                _channel.BasicConsume(queue: "messages",
-                                           autoAck: true,
-                                           consumer: consumer);
-                Console.ReadLine();
+            _channel.BasicConsume(queue: "messages",
+                                       autoAck: true,
+                                       consumer: consumer);
+            Console.ReadLine();
 
         }
 
@@ -92,23 +107,6 @@ namespace QueuesImpl
             };
             return factory.CreateConnection();
         }
-        public async Task MessagesHandler(BasicDeliverEventArgs ea)
-        {
-            Console.WriteLine("waiting for queue");
-            var _body = ea.Body;
-            var msg = Encoding.UTF8.GetString(_body);
-            var message = JsonConvert.DeserializeObject<MessageWithoutUser>(msg);
-            Service utilService = message.Service;
-            IBot bot = _factory.GetBot(utilService);
-            var _result = bot.ExecuteLikes(message.MessageId, message.UserId, message.Likes, utilService, message.Time);
-
-            if (_result > 0)
-            {
-                await _scheduler.StartSchedule(message.MessageId, _result, message.Time, utilService);
-                Console.WriteLine($"{_result} likes left");
-            }
-            Console.ReadLine();
-        }
         ~RabbitMQImpl()
         {
             Dispose();
@@ -130,6 +128,11 @@ namespace QueuesImpl
         {
             var newJson = JsonConvert.SerializeObject(msg);
             return Encoding.UTF8.GetBytes(newJson);
+        }
+
+        public UsersCredentialsModel GetUserNamePassword(string id)
+        {
+            return _context.GetById(id);
         }
     }
 }

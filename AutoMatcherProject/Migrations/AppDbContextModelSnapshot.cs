@@ -218,6 +218,25 @@ namespace AutoMatcherProject1.Migrations
                     b.ToTable("AspNetUsers");
                 });
 
+            modelBuilder.Entity("Models.CookieModel", b =>
+                {
+                    b.Property<string>("SessionId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime?>("Expiry")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Service")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("SessionId");
+
+                    b.ToTable("CookieModel");
+                });
+
             modelBuilder.Entity("Models.Message", b =>
                 {
                     b.Property<int>("MessageId")
@@ -258,6 +277,9 @@ namespace AutoMatcherProject1.Migrations
 
                     b.Property<int>("Service")
                         .HasColumnType("int");
+
+                    b.Property<string>("ServiceId")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Username")
                         .HasColumnType("nvarchar(max)");

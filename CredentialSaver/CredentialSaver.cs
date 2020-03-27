@@ -23,9 +23,9 @@ namespace DbServices
             _context.Add(model);
             _context.SaveChangesAsync();
         }
-        public UsersCredentialsModel Get(string username, string password)
+        public UsersCredentialsModel Get(string username, string password,Service service)
         {
-            var user = _context.UsersCredentialsModels.Where(b => b.Username == username)
+            var user = _context.UsersCredentialsModels.Where(b => b.Username == username).Where(b=>b.Service == service)
                     .FirstOrDefault();
             if (user != null)
             {
@@ -42,6 +42,33 @@ namespace DbServices
 
             if (hashed == user.Password) return true;
             else return false;
+        }
+
+        public UsersCredentialsModel GetById(string id)
+        {
+         
+            var user = _context.UsersCredentialsModels.Find(id);
+            var res = PasswordHasher.PasswordDecrypt(user.Password, user.Hash);
+            user.Password = res;
+            return user;
+
+
+        }
+
+        public void SaveSessionId(CookieModel cookie)
+        {
+            _context.Add(cookie);
+            _context.SaveChanges();
+        }
+
+        public CookieModel GetCookie(string userId, Service service)
+        {
+            var cookie = _context.CookieModel.Where(b => b.UserId == userId).Where(b => b.Service == service).FirstOrDefault(); ;
+            if (cookie != null)
+            {
+                return cookie;
+            }
+            else return null;       
         }
     }
 

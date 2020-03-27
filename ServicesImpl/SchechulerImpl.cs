@@ -1,4 +1,5 @@
 ﻿using Interfaces;
+using JobsImpl;
 using Microsoft.AspNetCore.Identity;
 using Models;
 using Quartz;
@@ -24,19 +25,18 @@ namespace ServicesImpl
             return user.Id;
         }
 
-        public async Task Schedule(int messageId, DateTime time, int likes, Service service, IdentityUser user)
+        public async Task Schedule(string userId,DateTime time, int likes, Service service, IdentityUser user)
         {
             if (time == DateTime.MinValue)
             {
                 time = DateTime.UtcNow;
             }
-            _uniqueId = Guid.NewGuid().ToString();
-            _userId = GetUser(user);
-            await StartSchedule(messageId, likes, time, service);
+            
+            await StartSchedule(userId, likes, time, service);
 
         }
 
-        public async Task StartSchedule(int messageId, int likes, DateTime time, Service service)
+        public async Task StartSchedule(string userId, int likes, DateTime time, Service service)
         {
             if (time == DateTime.MinValue)
             {
@@ -44,14 +44,26 @@ namespace ServicesImpl
             }
             _uniqueId = Guid.NewGuid().ToString();
             IJobDetail job = JobBuilder.Create<SchedulerJob>().WithIdentity(_uniqueId, "bots").Build();
-            job.JobDataMap.Put("message", new MessageWithoutUser { MessageId = messageId, UserId = _userId, Likes = likes, Time = time, Service = service });
+            job.JobDataMap.Put("message", new MessageWithoutUser {UserId = userId, Likes = likes, Time = time, Service = service });
             ITrigger trigger = TriggerBuilder.Create().WithIdentity(_uniqueId, "bots")
                                                       .StartNow()
                                                       .Build();
             await _scheduler.ScheduleJob(job, trigger);
         }
 
+        public async Task DailyCleanUp(DateTime time)
+        {
+            _uniqueId = Guid.NewGuid().ToString();
+            IJobDetail job = JobBuilder.Create<DailyCleanUpJob>().WithIdentity(_uniqueId, "clean").Build();
 
+            ITrigger trigger = TriggerBuilder.Create()
+                .WithIdentity(_uniqueId, "clean").StartNow()
+                                                      .Build();
+            //.WithSchedule(CronScheduleBuilder.DailyAtHourAndMinute(21, 05))
+            //.ForJob(job.Key)
+            //.Build();
 
+            await _scheduler.ScheduleJob(job, trigger);
+        }
     }
 }

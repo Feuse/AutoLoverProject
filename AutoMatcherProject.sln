@@ -25,6 +25,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Utils", "Utils\Utils.csproj
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DbServices", "CredentialSaver\DbServices.csproj", "{8503AB37-4679-48B4-A86A-8A4EDF2AA5AB}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BadooBotUtils", "BadooBotUtils\BadooBotUtils.csproj", "{46965B37-DC8B-4097-8DDA-93B016473CF6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JobsImpl", "JobsImpl\JobsImpl.csproj", "{A6634867-59D0-4D33-9BFD-700EEF4C80FD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -75,6 +79,14 @@ Global
 		{8503AB37-4679-48B4-A86A-8A4EDF2AA5AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8503AB37-4679-48B4-A86A-8A4EDF2AA5AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8503AB37-4679-48B4-A86A-8A4EDF2AA5AB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{46965B37-DC8B-4097-8DDA-93B016473CF6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{46965B37-DC8B-4097-8DDA-93B016473CF6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{46965B37-DC8B-4097-8DDA-93B016473CF6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{46965B37-DC8B-4097-8DDA-93B016473CF6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A6634867-59D0-4D33-9BFD-700EEF4C80FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A6634867-59D0-4D33-9BFD-700EEF4C80FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A6634867-59D0-4D33-9BFD-700EEF4C80FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A6634867-59D0-4D33-9BFD-700EEF4C80FD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

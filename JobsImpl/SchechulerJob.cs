@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ServicesImpl
+namespace JobsImpl
 {
     public class SchedulerJob : IJob
     {
@@ -20,7 +20,7 @@ namespace ServicesImpl
             await Task.Yield();
             JobDataMap jobMap = context.JobDetail.JobDataMap;
             MessageWithoutUser message = (MessageWithoutUser)jobMap.Get("message");
-            
+
             _queue.Queue(message);
         }
 

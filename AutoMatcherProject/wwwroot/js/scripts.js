@@ -16,6 +16,44 @@ function flipService() {
     $("#likes").fadeIn();
 };
 
+//$(document).ready(function () {
+//    $.ajax({
+//        url: '/Actions/GetUserImages',
+//        method: 'GET',
+//        dataType: 'json',
+//        success: function (data) {
+//            $.each(data, function (key, record) {
+//                $('#userPictures').append('<img src=' + record.previewUrl + '" />');
+//            });
+             
+//        },
+//        error: function (error) {
+//            alert(error);
+//        }
+//    })
+//});
+
+$(document).ready(function () {
+
+    $('#autocomplete2').autocomplete({
+        source: function (request, response) {
+            $.ajax({
+                url: '/Actions/AutoComplete',
+                method: 'POST',
+                data: $("#autoCompleteForm").serialize(),
+                dataType: 'json',
+                success: function (data) {
+                    response(data)
+                },
+                error: function (error) {
+                    alert(error);
+                }
+            })
+        }
+    })
+});
+
+
 function validateUser() {
     $("#error").hide();
     $('.spinner-border').show();
@@ -25,22 +63,33 @@ function validateUser() {
         url: '/Actions/ValidateUser',
         data: $("#serviceLogIn").serialize(),
         dataType: "text",
-        
+
         success: function () {
             $('.loader').hide();
             $("#pleaseWait").hide();
             $('#serviceLogIn').fadeOut();
             $('.checkOut').fadeIn();
             $("#StartLiking").fadeIn();
+            $.ajax({
+                url: '/Actions/GetUserImages',
+                method: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    $.each(data, function (key, record) {
+                        $('#userPictures').append('<img src=' + record.previewUrl + '" />');
+                    });
+
+                },
+                error: function (error) {
+                    alert(error);
+                }
+            })
         },
         error: function () {
             $("#error").show();
             $("#error").text("Wrong username / password, please try again!");
             $('.spinner-border').hide();
             $("#pleaseWait").hide();
-           
-            
-            
         }
     });
 }
@@ -52,6 +101,37 @@ function schedule() {
         dataType: "text",
     });
 }
+function changeDesc() {
+    $.ajax({
+        type: "POST",
+        url: '/Actions/ChangeDescription',
+        data: $("#ChangeDesc").serialize(),
+        dataType: "text",
+    });
+}
+
+function getCity() {
+    $.ajax({
+        type: "POST",
+        url: '/Actions/GetCountry',
+        data: $("#autocomplete2").serialize(),
+        dataType: "text",
+        success: function (data) {
+           alert("woooh");
+        },
+        error: function (error) {
+            alert(error);
+        }
+    });
+}
+
+$(document).ready(function () {
+    $("#autocomplete").autocomplete({
+        source: '/Users/ChangeDescription'
+
+    })
+});
+
 function msg() {
     console.log(msg);
 }
@@ -183,3 +263,4 @@ function closeAllSelect(elmnt) {
 /* If the user clicks anywhere outside the select box,
 then close all select boxes: */
 document.addEventListener("click", closeAllSelect);
+

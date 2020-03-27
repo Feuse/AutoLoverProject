@@ -9,6 +9,7 @@ namespace Models
     {
         [Key]
         public string Id { get; set; }
+        public string ServiceId { get; set; }
         public Service Service { get; set; }
         public string Username { get; set; }
         public string Password { get; set; }
