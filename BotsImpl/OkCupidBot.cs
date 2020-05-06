@@ -24,6 +24,11 @@ namespace BotsImpl
             throw new NotImplementedException();
         }
 
+        public int ExecuteLikes(int _mssageId, string _userId, int _likes, DateTime _time, string sessionId)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<List<string>> GetCities(string sessionId, string input)
         {
             throw new NotImplementedException();
