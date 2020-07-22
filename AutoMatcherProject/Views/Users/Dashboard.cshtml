@@ -1,7 +1,13 @@
-﻿@using Microsoft.AspNetCore.Identity;
-@using Models
+﻿@using Models
+@using AutoMatcherProject.ViewModels
+@using AutoMatcherProject1.Controllers
 @model Models.GenericUser
+@using Utils
+@using Interfaces
+@using Microsoft.AspNetCore.Identity;
+@using DbServices
 
+@inject ICredentialDb DataAccess
 @inject UserManager<ApplicationUser> signIn
 
 
@@ -10,95 +16,353 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 
 }
-    <head>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js">
-        </script>
-        <script src="~/lib/jquery-validate/jquery.validate.js"></script>
-        <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
-        <link rel="stylesheet" type="text/css" href="~/css/css/myCss.css">
-        <link href='https://fonts.googleapis.com/css?family=Arya' rel='stylesheet'>
-        <script src="~/js/scripts.js"></script>
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js">
+    </script>
+    <script src="~/lib/jquery-validate/jquery.validate.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
+    <script src="~/jQuery-Autocomplete-master/"></script>
+    <link rel="stylesheet" type="text/css" href="~/css/css/myCss.css">
+    <link rel="stylesheet" type="text/css" href="~/css/css/AuthUserCss.css">
+    <link href='https://fonts.googleapis.com/css?family=Arya' rel='stylesheet'>
+    <script src="~/js/scripts.js"></script>
+    <script src="~/js/AuthenticatedUserScripts.js"></script>
+    <script src="~/jquery-ui.js"></script>
+    <link href="~/jquery-ui.css" rel="stylesheet" />
 
-    </head>
 
-<div id="cont">
-    <div class="botImage">
-        <img src="~/images/unnamed.png" alt="Alternate Text" />
-    </div>
-    <div id="cn1">
-        <form id="schedulerForm">
-            <div id="service">
-                <label class="aryaFont">Select a service</label>
-                <br />
-                <select id="service" class="browser-default custom-select" asp-for="Service" asp-items="Html.GetEnumSelectList<Service>()" onchange="flipService()">
-                    <option style="display:none" />
-                </select>
+</head>
 
-            </div>
-            <br />
-            <div id="likes">
-                <label class="aryaFont">Select ammount of likes</label>
-                <br />
-                <input id="likesInput" class="likeInput" asp-for="Likes" onchange="flipLikes()">
-                <br />
-                <div id="checkbox">
-                    <label class="aryaFont">Start liking in the future?</label>
-                    <div class="custom-control custom-checkbox">
+
+@{
+    var user = DataAccess.GetById(signIn.GetUserId(User));
+    var username = user.Username;
+    var password = user.Password;
+    var allServices = Enum.GetValues(typeof(Service)).Cast<Service>().ToList();
+    List<Service>? services = null;
+    List<Service>? unsubscribedServices = new List<Service>();
+    try
+    {
+
+        services = DataAccess.GetUserServices(signIn.GetUserId(User));
+        for (int i = 0; i < allServices.Count - 1; i++)
+        {
+            if (!services.Contains(allServices[i]))
+            {
+                unsubscribedServices.Add(allServices[i]);
+            }
+        }
+    }
+    catch (Exception)
+    {
+
+    }
+
+    if (services.Count != 0)
+    {
+        <div id="mainCont">
+            <div id="cont1">
+                <label class="aryaFont">Welcome Back @username!</label>
+                <div id="userServices">
+                    <label class="aryaFont">Select a service</label>
+                    <br />
+                    @*<form method="post" asp-action="ChangeDescriptions" asp-controller="Actions">
+                            @for (int i = 0; i < services.Count; i++)
+                            {
+                                <input name="services" type="checkbox" value="@services[i]" />
+
+                                @Html.Hidden("id", @signIn.GetUserId(User));
+                                <label id="serviceName">@services[i]</label>
+                                <br />
+
+                            }
+                            <input type="text" name="description" value="" />
+                            <button>Change description!</button>
+                        </form>*@
+
+                    <form id="schedulerFormAuth">
+                        <select id="userServicesDropDownAuth" class="browser-default custom-select" asp-for="Service" onchange="flipServiceAuth()">
+                            @{
+                                <option style="display:none"></option>
+                                foreach (var item in services)
+                                {
+                                    <option>@item.ToString()</option>
+                                }
+                            }
+                        </select>
                         <br />
-                        <div class="onoffswitch">
-                            <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="myonoffswitch" checked>
-                            <label class="onoffswitch-label" for="myonoffswitch">
-                                <span class="onoffswitch-inner"></span>
-                                <span class="onoffswitch-switch"></span>
-                            </label>
-                        </div>
-                        <div id="date">
-                            <label class="aryaFont"> When would you like us to start?</label>
-                            <div class="container">
+                        <div id="likesAuth">
+                            <label class="aryaFont">Select ammount of likes</label>
+                            <br />
+                            <input id="likesInputAuth" class="likeInput" asp-for="Likes" onchange="flipLikesAuth()">
+                            <br />
+                            <div id="checkboxAuth">
+                                <label class="aryaFont">Start liking in the future?</label>
+                                <div class="custom-control custom-checkbox">
+                                    <br />
+                                    <div class="onOffAuth">
+                                        <div class="onoffswitchAuth">
+                                            <input type="checkbox" name="onoffswitchAuth" class="onoffswitch-checkboxAuth" id="myonoffswitchAuth" checked>
+                                            <label class="onoffswitch-labelAuth" for="myonoffswitchAuth">
+                                                <span class="onoffswitch-innerAuth"></span>
+                                                <span class="onoffswitch-switchAuth"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div id="dateAuth">
+                                        <label class="aryaFont"> When would you like us to start?</label>
+                                        <div class="container">
 
-                                <input id="datetimepicker1" asp-for="Time" type="datetime-local" asp-format="{4:MM/dd/yyyy}" class="form-control" />
-                                <button id="date" type="submit" class="btn btn-primary">Continue</button>
+                                            <input id="datetimepicker1Auth" asp-for="Time" type="datetime-local" asp-format="{4:MM/dd/yyyy}" class="form-control" />
+                                            <button id="dateAuth" type="submit" class="btn btn-primary">Continue</button>
+                                        </div>
+                                    </div>
+                                    <input id="submitAuth" onclick="submitValidatedFormAuth('@username','@password')" type="button" class="btn btn-primary" value="Continue 1">
+                                    <i id="pleaseWait" class="text-danger"></i>
+                                </div>
                             </div>
                         </div>
-                        <input id="submit" onclick="submitForm()" type="button" class="btn btn-primary" value="Continue">
+
+                    </form>
+                </div>
+                <div class="checkOutAuth">
+                    <h5>Checkout form</h5>
+                    <input id="StartLikingAuth" onclick="scheduleAuth()" type="button" class="btn btn-primary" value="Check out and start likiing!">
+                </div>
+                <div id="descriptionAuth">
+                    <form id="ChangeDescAuth">
+                        <h5>Change Description</h5>
+                        <input type="text" asp-for="Proffesion" /> <i>Proffesion</i>
+                        <br />
+                        <input type="text" asp-for="CompanyName" /><i>Company name</i>
+                        <br />
+                        <input type="text" asp-for="School" /><i>School or university</i>
+                        <br />
+                        <input onclick="changeDescAuth()" type="button" class="btn btn-primary" value="Change Description">
+                    </form>
+                    <br />
+                    <form id="autoCompleteForm">
+                        <input id="autocomplete2" asp-for="input" type="text"><i>Change location</i>
+                        <br />
+                        <input onclick="getCityAuth()" asp-for="input" type="button" value="Set Location" class="btn btn-primary">
+                    </form>
+                    <br />
+                    <div class="userPicturesAuth">
+                        <div class="addPicture"><div class="pictureSquare"><div class="camIcon"><i class="fas fa-camera fa-3x "></i><div class="addAPicture"><form id="formt" enctype="multipart/form-data"><input onchange="uploadAuth()" id="file" asp-for="Photo" type="file" /><input id="service2" asp-for="Service" /><i>Add a picture</i></form></div></div></div></div>
                     </div>
                 </div>
             </div>
-        </form>
-    </div>
+            @*@if (unsubscribedServices.Count > 0)
+                {
+                    <div id="cont2">
+                        <div class="botImage">
+                            <img src="~/images/unnamed.png" alt="Alternate Text" />
+                        </div>
+                        <div id="cn1">
+                            <form id="schedulerForm">
+                                <div id="service">
+                                    <label class="aryaFont">Select a service</label>
+                                    <br />
+                                    <select id="service" class="browser-default custom-select" asp-for="Service" onchange="flipService()">
 
-    <div >
-        <form id="serviceLogIn">
-            <div>
-                <i id="error" class="text-danger"></i>
-            </div>
-            <div>
-                <input id="username1" type="text" asp-for="username" value="username" />
-                <br />
-                <input id="password1" type="password" asp-for="password" value="password" />
-                <br />
-            </div>
-            <input id="submitService" onclick="validateUser()" type="button" class="btn btn-primary" value="Validate">
-            <br />
-            <i id="pleaseWait" class="text-danger"></i>
-            
-                <div class="spinner-border"></div>
-            
-        </form>
-    </div>
-    <div>
-        <div>
-            <form asp-action="ChangeDescription" asp-controller="Actions">
-            </form>
+                                        @{
+                                            <option style="display:none"></option>
+                                            foreach (var singleService in unsubscribedServices)
+                                            {
+                                                <option>@singleService.ToString()</option>
+                                            };
+                                        }
+                                    </select>
+                                </div>
+                                <br />
+                                <div id="likes">
+                                    <label class="aryaFont">Select ammount of likes</label>
+                                    <br />
+                                    <input id="likesInput" class="likeInput" asp-for="Likes" onchange="flipLikes()">
+                                    <br />
+                                    <div id="checkbox">
+                                        <label class="aryaFont">Start liking in the future?</label>
+                                        <div class="custom-control custom-checkbox">
+                                            <br />
+                                            <div class="onoffswitch">
+                                                <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="myonoffswitch" checked>
+                                                <label class="onoffswitch-label" for="myonoffswitch">
+                                                    <span class="onoffswitch-inner"></span>
+                                                    <span class="onoffswitch-switch"></span>
+                                                </label>
+                                            </div>
+                                            <div id="date">
+                                                <label class="aryaFont"> When would you like us to start?</label>
+                                                <div class="container">
+
+                                                    <input id="datetimepicker1" asp-for="Time" type="datetime-local" asp-format="{4:MM/dd/yyyy}" class="form-control" />
+                                                    <button id="date" type="submit" class="btn btn-primary">Continue</button>
+                                                </div>
+                                            </div>
+                                            <input id="submit" onclick="submitForm()" type="button" class="btn btn-primary" value="Continue">
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div>
+                            <form id="serviceLogIn">
+                                <div>
+                                    <i id="error" class="text-danger"></i>
+                                </div>
+                                <div>
+                                    <input id="username1" type="text" asp-for="Username" value="Username" />
+                                    <br />
+                                    <input id="password1" type="password" asp-for="Password" value="Password" />
+                                    <br />
+                                </div>
+                                <input id="submitService" onclick="validateUser()" type="button" class="btn btn-primary" value="Validate">
+                                <br />
+                                <i id="pleaseWait" class="text-danger"></i>
+
+                                <div class="spinner-border"></div>
+
+                            </form>
+                        </div>
+                        <br />
+                        <div class="checkOut">
+                            <h5>Checkout form</h5>
+                            <input id="StartLiking" onclick="schedule()" type="button" class="btn btn-primary" value="Check out and start likiing!">
+                        </div>
+                        <div id="description">
+                            <form id="ChangeDesc">
+                                <h5>Change Description</h5>
+                                <input type="text" asp-for="Proffesion" /> <i>Proffesion</i>
+                                <br />
+                                <input type="text" asp-for="CompanyName" /><i>Company name</i>
+                                <br />
+                                <input type="text" asp-for="School" /><i>School or university</i>
+                                <br />
+                                <input onclick="changeDesc()" type="button" class="btn btn-primary" value="Change Description">
+                            </form>
+                            <br />
+                            <form id="autoCompleteForm">
+                                <input id="autocomplete2" asp-for="input" type="text"><i>Change location</i>
+                                <br />
+                                <input onclick="getCity()" asp-for="input" type="button" value="Set Location" class="btn btn-primary">
+                            </form>
+                            <br />
+                        </div>
+                            <div class="userPictures">
+                                <div class="addPicture"><div class="pictureSquare"><div class="camIcon"><i class="fas fa-camera fa-3x "></i><div class="addAPicture"><form id="formt" enctype="multipart/form-data"><input onchange="upload()" id="file" asp-for="Photo" type="file" /><input id="service2" asp-for="Service" /><i>Add a
+
+                    </i></form></div></div></div></div>
+                            </div>
+
+
+                        <div>
+                            <form asp-action="TESTMETHOD" asp-controller="Actions">
+                                <input type="submit" name="name" value="test" />
+                            </form>
+                        </div>
+                    </div>
+                }*@
         </div>
-    </div>
- 
-    <div class="checkOut">
-        <h5>Checkout form</h5>
-        <input id="StartLiking" onclick="schedule()" type="button" class="btn btn-primary" value="Check out and start likiing!">
-    </div>
+    }
+    else
+    {
+        <div id="cont2">
 
-</div>
+            <div id="cn1">
+                <form id="schedulerForm">
+                    <div id="service">
+                        <label class="aryaFont">Select a service</label>
+                        <br />
+                        <select id="service" class="browser-default custom-select" asp-for="Service" asp-items="Html.GetEnumSelectList<Service>()" onchange="flipService()">
+                            <option style="display:none" />
+                        </select>
+                    </div>
+                    <br />
+                    <div id="likes">
+                        <label class="aryaFont">Select ammount of likes</label>
+                        <br />
+                        <input id="likesInput" class="likeInput" asp-for="Likes" onchange="flipLikes()">
+                        <br />
+                        <div id="checkbox">
+                            <label class="aryaFont">Start liking in the future?</label>
+                            <div class="custom-control custom-checkbox">
+                                <br />
+                                <div class="onoffswitch">
+                                    <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox switchunauth" id="myonoffswitch" checked>
+                                    <label class="onoffswitch-label" for="myonoffswitch">
+                                        <span class="onoffswitch-inner"></span>
+                                        <span class="onoffswitch-switch"></span>
+                                    </label>
+                                </div>
+                                <div id="date">
+                                    <label class="aryaFont"> When would you like us to start?</label>
+                                    <div class="container">
+
+                                        <input id="datetimepicker1" asp-for="Time" type="datetime-local" asp-format="{4:MM/dd/yyyy}" class="form-control" />
+                                        <button id="date" type="submit" class="btn btn-primary">Continue</button>
+                                    </div>
+                                </div>
+                                <input id="submit" onclick="submitForm()" type="button" class="btn btn-primary" value="Continue">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div>
+                <form id="serviceLogIn">
+                    <div>
+                        <i id="error" class="text-danger"></i>
+                    </div>
+                    <div>
+                        <input id="username1" type="text" asp-for="Username" value="Username" />
+                        <br />
+                        <input id="password1" type="password" asp-for="Password" value="Password" />
+                        <br />
+                    </div>
+                    <input id="submitService" onclick="validateUser()" type="button" class="btn btn-primary" value="Validate">
+                    <br />
+                    <i id="pleaseWait" class="text-danger"></i>
+
+                    <div class="spinner-border"></div>
+
+                </form>
+            </div>
+            <div class="checkOut">
+                <h5>Checkout form</h5>
+                <input id="StartLiking" onclick="schedule()" type="button" class="btn btn-primary" value="Check out and start likiing!">
+            </div>
+            <div id="description">
+                <form id="ChangeDesc">
+                    <h5>Change Description</h5>
+                    <input type="text" asp-for="Proffesion" /> <i>Proffesion</i>
+                    <br />
+                    <input type="text" asp-for="CompanyName" /><i>Company name</i>
+                    <br />
+                    <input type="text" asp-for="School" /><i>School or university</i>
+                    <br />
+                    <input onclick="changeDesc()" type="button" class="btn btn-primary" value="Change Description">
+                </form>
+                <br />
+                <form id="autoCompleteForm">
+                    <input id="autocomplete2" asp-for="input" type="text"><i>Change location</i>
+                    <br />
+                    <input onclick="getCity()" asp-for="input" type="button" value="Set Location" class="btn btn-primary">
+                </form>
+                <br />
+                <div class="userPictures">
+                    <div class="addPicture"><div class="pictureSquare"><div class="camIcon"><i class="fas fa-camera fa-3x "></i><div class="addAPicture"><form id="formt" enctype="multipart/form-data"><input onchange="upload()" id="file" asp-for="Photo" type="file" /><input id="service2" asp-for="Service" /><i>Add a picture</i></form></div></div></div></div>
+                </div>
+            </div>
+        </div>
+
+
+
+    }
+}
+
+
 
 
 

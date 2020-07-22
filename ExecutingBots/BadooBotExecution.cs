@@ -64,8 +64,6 @@ namespace ExecutingBots
                     Dispose();
                     throw;
                 }
-                
-                _likesLeft--;
             }
         }
         public static void Dispose()

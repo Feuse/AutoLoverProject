@@ -1,22 +1,190 @@
-﻿//$("select").change(function () {
-//    console.log("test");
-//    $("#panel").toggle("slow", "linear");
-//});
-var time;
-var service;
+﻿var time;
 var likesInput;
 var username;
 var password;
+var service;
 
 function test() {
     console.log("test");
 }
 function flipService() {
-    //$("likes").css("display", "normal");
     $("#likes").fadeIn();
 };
 
+
+$(document).ready(function () {
+
+    $.ajax({
+        url: '/Actions/GetUserServices',
+        method: 'GET',
+        dataType: 'json',
+        success: function (data) {
+            for (var i = 0; i < data.length; i++) {
+                document.getElementById("serviceName").innerHTML = data[i];
+                document.getElementById("serviceName").value = data[i];
+            };
+        },
+        error: function (data) {
+            var d = data;
+            var imashelha = JSON.stringify(data);
+            alert(imashelha);
+        }
+    });
+});
+
+$(document).ready(function () {
+    $("#userServicesDropDown").on("change", fade);
+});
+function fade() {
+    $("#likesInput").val("");
+    if ($("#myonoffswitch").is(":not(:checked)")) {
+        $("#date").fadeOut("slow", "linear");
+        slideDate();
+    }
+    $("#myonoffswitch").prop('checked', true);
+
+}
+
+$(document).ready(function () {
+
+    $('#autocomplete2').autocomplete({
+        source: function (request, response) {
+            $.ajax({
+                url: '/Actions/AutoComplete',
+                method: 'POST',
+                data: $("#autoCompleteForm").serialize(),
+                dataType: 'json',
+                success: function (data) {
+                    response(data)
+                },
+                error: function (error) {
+                    alert(error);
+                }
+            })
+        }
+    })
+});
+
+
+$(document).ready(function () {
+
+    $('.butt').mouseenter(function () {
+        $(this).fadeTo('fast', 1);
+    });
+    $('.butt').mouseleave(function () {
+        $(this).fadeTo('fast', 0.7);
+    });
+    $('.addPicture').mouseenter(function () {
+        $(this).fadeTo('fast', 1);
+    });
+    $('.addPicture').mouseleave(function () {
+        $(this).fadeTo('fast', 0.7);
+    });
+});
+
+function upload() {
+
+
+
+    var formdata = new FormData($('#formt')[0]);
+
+    if ($("#file").val() !== "") {
+        $.ajax({
+            type: "POST",
+            url: '/Actions/UploadImage',
+            data: formdata,
+            processData: false,
+            contentType: false,
+            success: function (data) {
+            },
+            error: function (e) {
+                console.log(e.responseText);
+            }
+        });
+    }
+}
+
+$(document).ready(function () {
+    $(".singleElement").click(function () {
+        var atr = $(this).attr("data-id");
+        var elem = this.innerHTML;
+        if (elem.includes("Change")) {
+            $.ajax({
+                type: "POST",
+                url: '/Actions/ChangePicture',
+                data: atr,
+                dataType: "text",
+                success: function (data) {
+                    //switch pictures
+                    //or remove current, and replance with new.
+                },
+                error: function () {
+
+                }
+            });
+        }
+        if (elem.includes("Make")) {
+            $.ajax({
+                type: "POST",
+                url: '/Actions/MakeProfile',
+                data: atr,
+                dataType: "text",
+                success: function (data) {
+                    //set profile picture as current
+                },
+                error: function () {
+
+                }
+            });
+        }
+        if (elem.includes("Delete")) {
+            $.ajax({
+                type: "POST",
+                url: '/Actions/DeletePicture',
+                data: atr,
+                dataType: "text",
+                success: function (data) {
+                    //remove picture by id
+                },
+                error: function () {
+
+                }
+            });
+        }
+
+    });
+});
+
+
+function getval(sel) {
+    alert(sel.value);
+    if (sel.value == "Badoo") {
+        $(".badoo").css("display", "block").fadeOut("slow", "linear");
+        $(".badoo").slideDown("slow", "linear").fadeIn("slow", "linear");
+        $(".tinder").css("display", "none").fadeOut("slow", "linear");
+        $(".grinder").css("display", "none").fadeOut("slow", "linear");
+        $(".okCupid").css("display", "none").fadeOut("slow", "linear");
+    } if (sel.value == "Tinder") {
+        $(".tinder").slideDown("slow", "linear").fadeIn("slow", "linear");
+        $(".badoo").fadeOut("slow", "linear").css("display", "none");
+        $(".grinder").css("display", "none").fadeOut("slow", "linear");
+        $(".okCupid").css("display", "none").fadeOut("slow", "linear");
+    } if (sel.value == "Grinder") {
+        $(".grinder").slideDown("slow", "linear").fadeIn("slow", "linear");
+        $(".tinder").css("display", "none").fadeOut("slow", "linear");
+        $(".badoo").css("display", "none").fadeOut("slow", "linear");
+        $(".okCupid").css("display", "none").fadeOut("slow", "linear");
+    } if (sel.value == "OkCupid") {
+        $(".okCupid").slideDown("slow", "linear").fadeIn("slow", "linear");
+        $(".tinder").css("display", "none").fadeOut("slow", "linear");
+        $(".grinder").css("display", "none").fadeOut("slow", "linear");
+        $(".badoo").css("display", "none").fadeOut("slow", "linear");
+    }
+}
+
+var str = "eeseses";
 function validateUser() {
+    console.log(str);
     $("#error").hide();
     $('.spinner-border').show();
     $("#pleaseWait").text("Validating, please do not refresh the page!").show();
@@ -25,22 +193,41 @@ function validateUser() {
         url: '/Actions/ValidateUser',
         data: $("#serviceLogIn").serialize(),
         dataType: "text",
-        
+
         success: function () {
             $('.loader').hide();
             $("#pleaseWait").hide();
             $('#serviceLogIn').fadeOut();
             $('.checkOut').fadeIn();
             $("#StartLiking").fadeIn();
+            $.ajax({
+                url: '/Actions/GetUserImages',
+                method: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    $.each(data, function (key, record) {
+                        $('.userPictures').append('<div class="singleImage" data-id=' + record.photoId + '><img class= "img" src=' + record.previewUrl + '/><button class="dropdowncust butt fas fa-ellipsis-v"><div class="dropdown-contentcust"><div class="singleElement"><p>Change picture</p></div><div class="singleElement"><p>Delete picture</p></div><div class="singleElement"><p>Make private</p></div></div></button></div>');
+                    });
+                    $('.userPictures').append('<div class="addPicture"><div class="pictureSquare"><div class="camIcon"><i class="fas fa-camera fa-3x "></i><div class="addAPicture"><form id="formt" enctype="multipart/form-data"><input onchange="upload()" id="file" asp-for="Photo" type="file"/><input id="service2" asp-for="Service"/><i>Add a picture</i></form></div></div></div></div>');
+
+                    $(".singleImage").click(function () {
+                        var atr = $(this).attr("data-id");
+                        console.log(atr);
+                    });
+
+
+
+                },
+                error: function (error) {
+                    alert(error);
+                }
+            })
         },
         error: function () {
             $("#error").show();
             $("#error").text("Wrong username / password, please try again!");
             $('.spinner-border').hide();
             $("#pleaseWait").hide();
-           
-            
-            
         }
     });
 }
@@ -52,6 +239,37 @@ function schedule() {
         dataType: "text",
     });
 }
+function changeDesc() {
+    $.ajax({
+        type: "POST",
+        url: '/Actions/ChangeDescription',
+        data: $("#ChangeDesc").serialize(),
+        dataType: "text",
+    });
+}
+
+function getCity() {
+    $.ajax({
+        type: "POST",
+        url: '/Actions/GetCountry',
+        data: $("#autocomplete2").serialize(),
+        dataType: "text",
+        success: function (data) {
+            alert("woooh");
+        },
+        error: function (error) {
+            alert(error);
+        }
+    });
+}
+
+$(document).ready(function () {
+    $("#autocomplete").autocomplete({
+        source: '/Users/ChangeDescription'
+
+    })
+});
+
 function msg() {
     console.log(msg);
 }
@@ -69,18 +287,36 @@ function submitForm() {
     time = document.getElementById('datetimepicker1');
 
 };
+function submitValidatedForm() {
+
+    $("#checkbox").fadeOut("slow", "linear")
+    $("#likes").fadeOut("slow", "linear");
+    $("#date").fadeOut("slow", "linear");
+    $("#service").fadeOut("slow", "linear")
+    $(".checkOut").fadeIn();
+    $("#StartLiking").fadeIn();
+
+    console.log("here");
+    likes = document.getElementById('likesInput');
+    service = document.getElementById('service');
+    time = document.getElementById('datetimepicker1');
+
+};
 
 $(document).ready(function () {
-    $('input[type="checkbox"]').click(function () {
-        if ($(this).prop("checked") == true) {
-            $("#date").slideUp("slow", "linear").fadeOut("slow", "linear");
-        }
-        else if ($(this).prop("checked") == false) {
-            $("#date").slideDown("slow", "linear").fadeIn("slow", "linear");
-
-        }
-    });
+    $('#myonoffswitch').on("change", slideDate);
 });
+
+function slideDate() {
+
+    if ($(this).prop("checked") == true) {
+        $("#date").slideUp("slow", "linear").fadeOut("slow", "linear");
+    }
+    else if ($(this).prop("checked") == false) {
+        $("#date").slideDown("slow", "linear").fadeIn("slow", "linear");
+    }
+};
+
 
 //$(function () {
 //    $('#datetimepicker1').datetimepicker();
@@ -183,3 +419,4 @@ function closeAllSelect(elmnt) {
 /* If the user clicks anywhere outside the select box,
 then close all select boxes: */
 document.addEventListener("click", closeAllSelect);
+

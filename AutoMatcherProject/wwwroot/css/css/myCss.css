@@ -17,14 +17,16 @@
 #serviceLogIn {
     display: none;
 }
-
-#cont {
-    margin: 15%;
-    position: fixed;
+#description {
+    display: none;
 }
 
 .custom-checkbox {
     padding: 0px;
+}
+
+h5 {
+    font: aryaFont;
 }
 
 #customCheck1 {
@@ -55,12 +57,10 @@ body {
     width: 200px;
 }
 
-#cont {
-    margin-left: 50%;
-}
 
-main {
-    margin-left: 5rem;
+
+#mainCont {
+    margin-top: 20%;
 }
 
 :root {
@@ -440,9 +440,122 @@ main {
 .spinner-border {
     display: none;
 }
-#pleaseWait{
-    display:none;
+
+#pleaseWait {
+    display: none;
 }
-.checkOut{
-    display:none;
+
+.checkOut {
+    display: none;
+}
+
+.ui-autocomplete {
+    max-height: 200px;
+    overflow-y: auto;
+    /* prevent horizontal scrollbar */
+    overflow-x: hidden;
+    /* add padding to account for vertical scrollbar */
+    padding-right: 20px;
+}
+
+.dropdowncust {
+    position: relative;
+    display: inline-block;
+    border-radius: 25px;
+}
+
+.dropdown-contentcust {
+    border-radius: 10px;
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 120px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    padding: 5px 5px 5px 5px;
+    z-index: 1;
+    color: black;
+}
+
+.singleElement:hover {
+    background-color: lightgray;
+    margin: 5px,5px,5px,5px;
+}
+
+
+
+.dropdowncust:hover .dropdown-contentcust {
+    display: block;
+    opacity: 100;
+}
+
+.singleImage {
+    position: relative;    
+    opacity: 0.7;
+    float: left;
+    padding-right:2px;
+}
+.userPictures {
+    position: center;
+    margin-left: 40%;
+    margin-top: 2%;
+    cursor: pointer;
+}
+.camIcon{
+    font-size:20px;
+    margin-left:30%;
+    margin-top:30%;
+    color:gray;
+}
+.addAPicture {
+    font-size: small;
+    font-weight: bold;
+    
+}
+.pictureSquare {
+    width: 180px;
+    height: 180px;
+    background: lightgray;
+    float: left;
+    padding: 2px;
+    margin: 0;
+}
+
+.butt {
+    opacity: 0.7;
+}
+
+.singleImage .butt {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    background-color: #555;
+    color: white;
+    padding: 9px 15px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.butt:hover {
+    background-color: black;
+    opacity: 1;
+}
+
+.singleImage:hover {
+    opacity: 1;
+}
+
+.badoo{
+    display: none;
+}
+.tinder {
+    display: none;
+}
+.grinder {
+    display: none;
+}
+.okCupid {
+    display: none;
 }

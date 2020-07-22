@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Models
 {
-    public enum Service
+    public enum Service : int
     {
         Badoo = 0,
         Tinder = 1,

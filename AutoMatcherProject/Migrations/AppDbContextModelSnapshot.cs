@@ -218,6 +218,25 @@ namespace AutoMatcherProject1.Migrations
                     b.ToTable("AspNetUsers");
                 });
 
+            modelBuilder.Entity("Models.CookieModel", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime?>("Expiry")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Service")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SessionId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("UserId");
+
+                    b.ToTable("CookieModel");
+                });
+
             modelBuilder.Entity("Models.Message", b =>
                 {
                     b.Property<int>("MessageId")
@@ -245,9 +264,48 @@ namespace AutoMatcherProject1.Migrations
                     b.ToTable("Messages");
                 });
 
-            modelBuilder.Entity("Models.UsersCredentialsModel", b =>
+            modelBuilder.Entity("Models.PictureUrlModel", b =>
+                {
+                    b.Property<string>("PhotoId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("PreviewUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("PhotoId");
+
+                    b.ToTable("PictureUrlModel");
+                });
+
+            modelBuilder.Entity("Models.ProjectionModel", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Projections")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SessionId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UsersIds")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("time")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("UserId");
+
+                    b.ToTable("ProjectionModel");
+                });
+
+            modelBuilder.Entity("Models.ServiceCredentialsModel", b =>
                 {
                     b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Hash")
@@ -259,10 +317,54 @@ namespace AutoMatcherProject1.Migrations
                     b.Property<int>("Service")
                         .HasColumnType("int");
 
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Username")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.ToTable("ServiceCredentialsModel");
+                });
+
+            modelBuilder.Entity("Models.ServiceModel", b =>
+                {
+                    b.Property<string>("ServiceId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("Service")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ServiceUserId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UsersCredentialsModelUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("ServiceId");
+
+                    b.HasIndex("UsersCredentialsModelUserId");
+
+                    b.ToTable("ServiceModel");
+                });
+
+            modelBuilder.Entity("Models.UsersCredentialsModel", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Hash")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Password")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Username")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("UserId");
 
                     b.ToTable("UsersCredentialsModels");
                 });
@@ -325,6 +427,13 @@ namespace AutoMatcherProject1.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Models.ServiceModel", b =>
+                {
+                    b.HasOne("Models.UsersCredentialsModel", null)
+                        .WithMany("Services")
+                        .HasForeignKey("UsersCredentialsModelUserId");
                 });
 #pragma warning restore 612, 618
         }

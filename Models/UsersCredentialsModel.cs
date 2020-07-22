@@ -8,8 +8,8 @@ namespace Models
     public class UsersCredentialsModel
     {
         [Key]
-        public string Id { get; set; }
-        public Service Service { get; set; }
+        public string UserId { get; set; }
+        public ICollection<ServiceModel> Services { get; set; }
         public string Username { get; set; }
         public string Password { get; set; }
         public string Hash { get; set; }

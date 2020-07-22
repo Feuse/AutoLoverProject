@@ -1,5 +1,6 @@
 ﻿
 using AutoMatcherProject.ViewModels;
+using Interfaces;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -12,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Utils;
 
 namespace AutoMatcherProject.Controllers
 {
@@ -20,13 +22,16 @@ namespace AutoMatcherProject.Controllers
         private ILogger<AccountController> _logger;
         private SignInManager<ApplicationUser> _signInManager;
         private UserManager<ApplicationUser> _userManager;
+        private readonly ICredentialDb CredentialDB;
         const string LoginViewName = "Login";
 
-        public AccountController(ILogger<AccountController> logger, SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager)
+
+        public AccountController(ILogger<AccountController> logger, SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager, ICredentialDb credentialDB)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
+            CredentialDB = credentialDB;
         }
         [HttpGet]
 
@@ -61,6 +66,10 @@ namespace AutoMatcherProject.Controllers
                 if (result.Succeeded)
                 {
                     await _signInManager.SignInAsync(user, isPersistent: false);
+
+                    var founduser = _userManager.Users.Where(i => i.UserName == model.Email).FirstOrDefault();
+                    var theId = founduser.Id;
+                    CredentialDB.Save(new UsersCredentialsModel { Hash = null, Password = model.Password, Services = null, UserId = theId, Username = model.Email });
                     return RedirectToAction("Dashboard", "Users");
                 }
 
@@ -89,10 +98,9 @@ namespace AutoMatcherProject.Controllers
 
                 if (result.Succeeded)
                 {
-                    if (!string.IsNullOrEmpty(ReturnUrl))
-                    {
-                        return LocalRedirect(ReturnUrl);
-                    }
+
+
+
                     return RedirectToAction("Dashboard", "Users");
                 }
 
@@ -106,7 +114,8 @@ namespace AutoMatcherProject.Controllers
         {
             var rediectUrl = Url.Action("ExternalLoginCallback", "Account", new { ReturnUrl = returnUrl });
             var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, rediectUrl);
-            return new ChallengeResult(provider, properties);
+            var s = new ChallengeResult(provider, properties);
+            return s;
         }
         public async Task<IActionResult> ExternalLoginCallback(string returnUrl, string remoteError = null)
         {
@@ -132,7 +141,8 @@ namespace AutoMatcherProject.Controllers
             var signInResult = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
             if (signInResult.Succeeded)
             {
-                return LocalRedirect(returnUrl);
+
+                return RedirectToAction("Dashboard", "Users");
             }
             else
             {
@@ -144,6 +154,7 @@ namespace AutoMatcherProject.Controllers
         {
             var email = info.Principal.FindFirstValue(ClaimTypes.Email);
             if (email != null)
+
             {
                 var user = await _userManager.FindByEmailAsync(email);
 
@@ -152,13 +163,21 @@ namespace AutoMatcherProject.Controllers
                     user = new ApplicationUser
                     {
                         UserName = info.Principal.FindFirstValue(ClaimTypes.Email),
-                        Email = info.Principal.FindFirstValue(ClaimTypes.Email)
+                        Email = info.Principal.FindFirstValue(ClaimTypes.Email),
+                        Country = "Israel"
+                        
+
                     };
+                    var s = info.Principal.FindFirstValue(ClaimTypes.Country);
                     await _userManager.CreateAsync(user);
+                    var founduser = _userManager.Users.Where(i => i.UserName == email).FirstOrDefault();
+                    var theId = founduser.Id;
+                    CredentialDB.Save(new UsersCredentialsModel { Hash = null, Password = model.Password, Services = null, UserId = theId, Username = model.Email });
                 }
                 await _userManager.AddLoginAsync(user, info);
                 await _signInManager.SignInAsync(user, isPersistent: false);
-                return LocalRedirect(returnUrl);
+
+                return RedirectToAction("Dashboard", "Users");
             }
             else
             {

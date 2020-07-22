@@ -1,6 +1,7 @@
 ﻿using AutoMatcherProject.ViewModels;
+using BotsImpl;
 using Interfaces;
-
+using System.Net;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -9,77 +10,254 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Utils;
+using Microsoft.AspNetCore.Http;
+using ServicesImpl;
+using Newtonsoft.Json;
+using Microsoft.AspNetCore.Hosting;
+using System.IO;
+using System.Security.Claims;
+using System.Text.Json;
 
 namespace AutoMatcherProject.Controllers
 {
-
-    [Authorize]
+    //[Authorize]
     public class ActionsController : Controller
     {
         private UserManager<ApplicationUser> _userManager;
-        private ISche _schedulrAbstraction;
-        private IBotFactory _factory;
-        private ICredentialSaver _saver;
-        private IBot _bot;
-        private string _username;
-        private string _password;
+        private readonly ISche SchedulrAbstraction;
+        private readonly IBotFactory Factory;
+        private readonly ICredentialDb CredentialDB;
 
-
-        public ActionsController(UserManager<ApplicationUser> userManager, ISche schedulrAbstraction, IBotFactory factory, ICredentialSaver saver)
+        public IWebHostEnvironment Hosting { get; }
+        private ISessionManager _sessionManager;
+        public ActionsController(UserManager<ApplicationUser> userManager,
+            ISche schedulrAbstraction,
+            IBotFactory factory,
+            ICredentialDb saver,
+            ISessionManager sessionManager,
+            IWebHostEnvironment hosting)
         {
             _userManager = userManager;
-            _schedulrAbstraction = schedulrAbstraction;
-            _factory = factory;
-            _saver = saver;
+            SchedulrAbstraction = schedulrAbstraction;
+            Factory = factory;
+            CredentialDB = saver;
+            _sessionManager = sessionManager;
+            Hosting = hosting;
         }
 
         [HttpPost]
         public async Task<IActionResult> ValidateUser(Service service, string username, string password)
         {
-            //check if user exists and if the password is correct, if not validate and save
-            var user = _saver.Get(username, password);
-            if (user != null)
+            var user = CredentialDB.GetServiceCredentialsModel(username, password);
+            IBot _bot = Factory.GetBot(service);
+            var result = await CheckCookies(username, password, service);
+            if (result == null)
             {
-                return RedirectToAction("Dashboard", "Users");
+                return Unauthorized();
             }
-            else
+            if (user == null)
             {
-                _bot = _factory.GetBot(service);
-                var result = _bot.Login(username, password);
-                if (result == "")
-                {
-                    var id = _userManager.GetUserId(HttpContext.User);
-                    UsersCredentialsModel model = new UsersCredentialsModel() { Id = id, Service = service, Password = password, Username = username };
-                    _saver.Save(model);
-                    _bot.ShutDown();
-                }
-                else
-                {
-                    return Unauthorized();
-                }
+                CredentialDB.SaveUserServiceCredentials(username, password, service);
             }
             return RedirectToAction("Dashboard", "Users");
         }
-        [HttpPost]
-        public async Task<IActionResult> ChangeDescription(Service service, string username, string password)
+        [HttpGet]
+        public async Task<List<string>> GetUserServices()
         {
-            _bot.Login(username, password);
-            //description object?
-            _bot.ChangeDescription();
-
-            //1. check if user log in credentials is working,
-            //2. get user credentials, and execute description changing bot.
-
-            return RedirectToAction("Dashboard", "Users");
+            var userId = _userManager.GetUserId(User);
+            var userServices = CredentialDB.GetUserServices(userId);
+            //foreach (var service in userServices)
+            //{
+            //    IBot _bot = Factory.GetBot(service);
+            //    var serviceCredentials = CredentialDB.GetByIdServiceCredentialsModel(userId);
+            //    //var result = _bot.Login(serviceCredentials.Username, serviceCredentials.Password);
+            //    //if (result == null)
+            //    //{
+            //    //    CredentialDB.RemoveServiceFromUser(userId, service);
+            //    //}
+            //}
+            return userServices.Select(i => i.ToString()).ToList();
         }
         [HttpPost]
-        public async Task<IActionResult> Schedule(int messageId, DateTime time, int likes, Service service, ApplicationUser user)
+        public Task<List<string>> AutoComplete(string input, Service service)
         {
+            var sessionId = _sessionManager.GetSession(service);
+            if (sessionId != null)
+            {
+                var bot = Factory.GetBot(service);
+                return bot.GetCities(input, sessionId);
+            }
+            return null;
+        }
+        [HttpPost]
+        private async Task<string> CheckCookies(string username, string password, Service service)
+        {
+            var user = CredentialDB.Get(username, password, service);
+            var _bot = Factory.GetBot(service);
+            var cookie = _bot.Login(username, password);
+
+            if (cookie.SessionId != null)
+            {
+                var userId = await SaveCookieAndUsers(username, password, service, _bot, cookie);
+
+                if (user == null)
+                {
+                    UsersCredentialsModel model = new UsersCredentialsModel() { UserId = _userManager.GetUserId(User), Password = password, Username = username };
+                    ServiceModel sm = new ServiceModel
+                    {
+                        Service = service,
+                        ServiceUserId = userId
+                    };
+                    List<ServiceModel> serviceModels = new List<ServiceModel>();
+                    serviceModels.Add(sm);
+                    model.Services = serviceModels;
+
+                    CredentialDB.Save(model);
+                }
+                return cookie.SessionId;
+            }
+
+            return null;
+        }
+
+        private async Task<string> SaveCookieAndUsers(string username, string password, Service service, IBot _bot, CookieModel cookie)
+        {
+            //Save users and cookie to database.
+            cookie.Expiry = DateTime.SpecifyKind((DateTime)cookie.Expiry, DateTimeKind.Utc);
+            var projectionModel = await _bot.LoginWithApi(username, password, cookie.SessionId);
+            projectionModel.UserId = _userManager.GetUserId(User);
+            projectionModel.SessionId = cookie.SessionId;
+            var parseProjections = JsonConvert.SerializeObject(projectionModel.Projections);
+            var parsedUserIds = JsonConvert.SerializeObject(projectionModel.UsersIds);
+            ProjectionModel projModel = new ProjectionModel()
+            {
+                Projections = parseProjections,
+                UsersIds = parsedUserIds,
+                SessionId = cookie.SessionId,
+                time = projectionModel.time,
+                UserId = projectionModel.UserId
+            };
+
+            _sessionManager.SetSession(service, cookie);
+            CredentialDB.SaveProjections(projModel);
+            return projectionModel.UserId;
+        }
+
+        [HttpPost]
+        public async Task ChangeDescription(string proffesion, string companyName, string school, string input, Service service)
+        {
+            var sessionId = _sessionManager.GetSession(service);
+            var bot = Factory.GetBot(service);
+            await bot.ChangeDescription(sessionId, proffesion, companyName, school);
+        }
+
+        [HttpPost]
+        public async Task ChangeDescriptions(string id, string description, List<Service> services)
+        {
+            foreach (var service in services)
+            {
+                var user = CredentialDB.GetById(id);
+                var sessionId = _sessionManager.GetSession(service);
+                var bot = Factory.GetBot(service);
+                await bot.ChangeDescriptions(description, service, sessionId);
+            }
+        }
+
+        [HttpPost]
+        public async Task ValidateServices(string id, List<Service> services)
+        {
+            foreach (var service in services)
+            {
+
+                var user = CredentialDB.GetById(id);
+                var bot = Factory.GetBot(service);
+                var cookie = bot.Login(user.Username, user.Password);
+                if (cookie != null)
+                {
+                    _sessionManager.SetSession(service, cookie);
+                    var sessionId = _sessionManager.GetSession(service);
+
+                }
+            }
+        }
+        [HttpPost]
+        public async Task GetCountry(string input, Service service)
+        {
+            var sessionId = _sessionManager.GetSession(service);
+            var bot = Factory.GetBot(service);
+            await bot.GetCountryId(sessionId, input);
+        }
+
+        [HttpPost]
+        public async Task SaveLocationBadoo(string location, Service service)
+        {
+            var sessionId = _sessionManager.GetSession(service);
+            var bot = Factory.GetBot(service);
+            await bot.SaveLocation(sessionId, location);
+        }
+
+        [HttpGet]
+        public async Task<List<PictureUrlModel>> GetUserImages(Service service)
+        {
+            //gets the user id from the session
+            var userId = _userManager.GetUserId(User);
+            //gets service sessisionId
+            var sessionId = _sessionManager.GetSession(service);
+            var bot = Factory.GetBot(service);
+            List<PictureUrlModel> list = await bot.GetImages(sessionId, userId);
+
+            var pictures = CredentialDB.GetBadooPictures(userId);
+
+            var firstNotSecond = list.Except(pictures).ToList();
+            foreach (var picture in firstNotSecond)
+            {
+                picture.UserId = userId;
+            }
+            if (firstNotSecond != null)
+            {      
+                CredentialDB.SaveBadooPictures(firstNotSecond);
+            }
+            return list;
+        }
+        [HttpPost]
+        public async Task<List<PictureUrlModel>> GetServicePictures(Service service)
+        {
+            var userId = _userManager.GetUserId(User);
+            var pc = CredentialDB.GetBadooPictures(userId);
+            return CredentialDB.GetBadooPictures(userId);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Schedule(DateTime time, int likes, Service service, ApplicationUser user)
+        {
+            var userId = _userManager.GetUserId(HttpContext.User);
             var _user = _userManager.GetUserAsync(HttpContext.User).Result;
-            await _schedulrAbstraction.Schedule(messageId, time, likes, service, _user);
+            await SchedulrAbstraction.Schedule(userId, time, likes, service, _user);
 
             return RedirectToAction("Dashboard", "Users");
         }
 
+        [HttpPost]
+        public string UploadImage(Service service, IFormFile photo)
+        {
+            if (photo != null)
+            {
+                string uploadsFolder = Path.Combine(Hosting.WebRootPath, "images");
+                var uniqueFileName = Guid.NewGuid().ToString() + "_" + photo.FileName;
+                string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                photo.CopyTo(new FileStream(filePath, FileMode.Create));
+                return filePath;
+            }
+
+            var sessionId = _sessionManager.GetSession(service);
+            var bot = Factory.GetBot(service);
+            return null;
+        }
+
+        public void TESTMETHOD()
+        {
+            CredentialDB.TESTSave();
+        }
     }
 }

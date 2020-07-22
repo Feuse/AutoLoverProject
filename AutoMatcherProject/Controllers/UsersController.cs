@@ -19,7 +19,6 @@ namespace AutoMatcherProject.Controllers
         [Authorize]
         public IActionResult Dashboard()
         {
-           
             return View();
         }
         [Authorize]
