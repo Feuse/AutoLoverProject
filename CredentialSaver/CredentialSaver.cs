@@ -5,21 +5,22 @@ using ServicesImpl;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Utils;
 
 namespace DbServices
 {
     public class CredentialDb : ICredentialDb
     {
+        private readonly object balanceLock = new object();
         private readonly AppDbContext _context;
         public CredentialDb(AppDbContext context)
         {
             _context = context;
+            _context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
         }
         public ProjectionModel GetUsersModel(string userId)
         {
-
-
             return _context.ProjectionModel.Where(b => b.UserId == userId).FirstOrDefault(); ;
         }
 
@@ -50,17 +51,17 @@ namespace DbServices
             var salt = PasswordHasher.Create();
             model.Password = PasswordHasher.HashPassword(model.Password, salt);
             model.Hash = salt;
-            
+
             _context.UsersCredentialsModels.Add(model);
             _context.SaveChanges();
         }
-        public void SaveUserServiceCredentials(string username, string password, Service service)
+        public void SaveUserServiceCredentials(string username, string password, Service service, string userId)
         {
-            var userId = Get(username, password, service).UserId;
+
             var salt = PasswordHasher.Create();
             ServiceCredentialsModel serviceModel = new ServiceCredentialsModel
             {
-                Password = PasswordHasher.HashPassword(password, salt),
+                Password = PasswordHasher.Encrypt(password, salt),
                 Service = service,
                 UserId = userId,
                 Username = username,
@@ -75,25 +76,29 @@ namespace DbServices
                      .FirstOrDefault();
             if (user != null)
             {
-                var hashedPassword = PasswordHasher.HashPassword(password, user.Hash);
-                if (hashedPassword == user.Password) return user;
-                else return null;
-            }
-            return null;
-        }
-        public ServiceCredentialsModel GetByIdServiceCredentialsModel(string userId)
-        {
-            var user = _context.ServiceCredentialsModel.Where(b => b.UserId == userId)
-                     .FirstOrDefault();
-            if (user != null)
-            {
-                var decrypted = PasswordHasher.PasswordDecrypt(user.Password, user.Hash);
-                user.Password = decrypted;
+                //var hashedPassword = PasswordHasher.Decrypt(password, user.Hash);
+                //if (hashedPassword == user.Password) return user;
+                //else return null;
                 return user;
             }
             return null;
         }
-        public UsersCredentialsModel Get(string username, string password, Service service)
+        public async Task<ServiceCredentialsModel> GetByIdServiceCredentialsModel(string userId)
+        {
+            lock (balanceLock)
+            {
+                var user = _context.ServiceCredentialsModel.Where(b => b.UserId == userId)
+                         .FirstOrDefault();
+                if (user != null)
+                {
+                    var decrypted = PasswordHasher.Decrypt(user.Password, user.Hash);
+                    user.Password = decrypted;
+                    return user;
+                }
+                return null;
+            }
+        }
+        public UsersCredentialsModel GetUsersCredentialsModel(string username, string password)
         {
             var user = _context.UsersCredentialsModels.Where(b => b.Username == username)
                     .FirstOrDefault();
@@ -117,9 +122,14 @@ namespace DbServices
         public UsersCredentialsModel GetById(string id)
         {
             var user = _context.UsersCredentialsModels.Find(id);
-            var res = PasswordHasher.PasswordDecrypt(user.Password, user.Hash);
-            user.Password = res;
-            return user;
+            var hashed = PasswordHasher.HashPassword(user.Password, user.Hash);
+            user.Password = hashed;
+            if (hashed == user.Password)
+            {
+                return user;
+            }
+            else return null;
+
         }
         public UsersCredentialsModel GetByEmail(string email)
         {
@@ -161,10 +171,11 @@ namespace DbServices
                 var model = _context.ProjectionModel.Where(b => b.UserId == projection.UserId).FirstOrDefault();
                 if (model != null)
                 {
-                    _context.Remove(projection);
+                    model = projection;
+                   
                     _context.SaveChanges();
-                    _context.Add(projection);
-                    _context.SaveChanges();
+
+
                 }
                 else
                 {

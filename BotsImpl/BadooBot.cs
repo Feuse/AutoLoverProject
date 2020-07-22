@@ -12,13 +12,13 @@ using System.Dynamic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Formatting;
+
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
-using Utils;
+
 
 
 namespace BotsImpl
@@ -31,6 +31,7 @@ namespace BotsImpl
         private static IWebDriver Driver;
         private Random Random;
         private ServicePropertiesModel Model;
+        
 
         private const string API_URL = "https://us1.badoo.com/api.phtml";
 
@@ -102,44 +103,56 @@ namespace BotsImpl
 
         public CookieModel Login(string username, string password, string? userId)
         {
+            WebDriverWait wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(15));
             // _driver = GetSeleniumDriver();
-            CookieModel badooCookie;
+            CookieModel badooCookie = new CookieModel(); 
             Random = new Random();
-            try
+            if (Driver.Url == "https://badoo.com/encounters")
             {
-                Driver.Navigate().GoToUrl(URL);
-                Driver.FindElement(By.ClassName("js-signin-login")).Clear();
-                Driver.FindElement(By.ClassName("js-signin-login")).SendKeys(username);
-                Driver.FindElement(By.ClassName("js-signin-password")).SendKeys(password);
-                Driver.FindElement(By.XPath("//button[@type='submit']")).Click();
-                //wait
-                //check if password correct
-                WebDriverWait wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(15));
-                wait.Until(driver1 => ((IJavaScriptExecutor)Driver).ExecuteScript("return document.readyState").Equals("complete"));
-                badooCookie = new CookieModel();
-                OpenQA.Selenium.Cookie cookie = null;
-                wait.Until(driver => Driver.Url.Contains("encounters"));
-                cookie = wait.Until(driver1 => GetCookie(Driver));
-
-                badooCookie.SessionId = cookie.Value.ToString().Replace("%3A", ":");
-                badooCookie.Expiry = cookie.Expiry;
-                badooCookie.UserId = userId;
-
-
-                if (Driver.Url == "https://badoo.com/promo/spp")
+                return getBadooSiteCookie(userId, badooCookie, wait);
+            }
+            else
+            {
+                try
                 {
-                    Driver.FindElement(By.ClassName("js-spp-close")).Click();
+                    Driver.Navigate().GoToUrl(URL);
+                    Driver.FindElement(By.ClassName("js-signin-login")).Clear();
+                    Driver.FindElement(By.ClassName("js-signin-login")).SendKeys(username);
+                    Driver.FindElement(By.ClassName("js-signin-password")).SendKeys(password);
+                    Driver.FindElement(By.XPath("//button[@type='submit']")).Click();
+                    //wait
+                    //check if password correct
+                    
+                    wait.Until(driver1 => ((IJavaScriptExecutor)Driver).ExecuteScript("return document.readyState").Equals("complete"));
+                    
+                   
+                    wait.Until(driver => Driver.Url.Contains("encounters"));
+                    badooCookie = getBadooSiteCookie(userId, badooCookie, wait);
+
+                    if (Driver.Url == "https://badoo.com/promo/spp")
+                    {
+                        Driver.FindElement(By.ClassName("js-spp-close")).Click();
+                    }
+                    else if (Driver.Url == URL)
+                    {
+                        return null;
+                    }
                 }
-                else if (Driver.Url == URL)
+                catch (Exception)
                 {
                     return null;
                 }
             }
-            catch (Exception)
-            {
-                return null;
-            }
 
+            return badooCookie;
+        }
+
+        private CookieModel getBadooSiteCookie(string userId, CookieModel badooCookie, WebDriverWait wait)
+        {
+            OpenQA.Selenium.Cookie cookie = wait.Until(driver1 => GetCookie(Driver));
+            badooCookie.SessionId = cookie.Value.ToString().Replace("%3A", ":");
+            badooCookie.Expiry = cookie.Expiry;
+            badooCookie.UserId = userId;
             return badooCookie;
         }
 
@@ -250,7 +263,7 @@ namespace BotsImpl
         public void ShutDown()
         {
             Driver.Dispose();
-            Driver.Close();
+
         }
 
         public async Task<LocalProjectionModel> GetLast(LocalProjectionModel projList, string sessionId)
@@ -270,6 +283,9 @@ namespace BotsImpl
             var objRes = JsonConvert.DeserializeObject<UsersResponseModel>(strRes);
             model.UsersIds = new List<string>();
             model.Projections = new List<long>();
+            model.SessionId = sessionId;
+            model.UsersIds = projList.UsersIds;
+            model.UserId = projList.UserId;
             foreach (var item in objRes.Body)
             {
                 foreach (var itemRes in item.ClientEncounters.Results)
@@ -285,21 +301,20 @@ namespace BotsImpl
         public async Task<int> ExecuteLikes(int likes)
         {
             var likesLeft = likes;
-            var leftRemoved = Model.UsersIds.Replace("[", "");
-            var rightRemoved = leftRemoved.Replace("]", "");
-            var allRemovd = rightRemoved.Replace("\"", "");
-            var slashRemoved = allRemovd.Replace("\\", "");
-            var li = slashRemoved.Split(",").ToList();
+            List<string> userIds = ExtractUserIdsFromList(Model.UsersIds);
             var result = JsonConvert.SerializeObject(Model.UsersIds);
-
 
             for (int i = 0; i < likes; i++)
             {
-                var id = li[i];
+                var id = userIds[i];
                 var json = "{\"version\":1,\"message_type\":80,\"message_id\":16,\"body\":[{\"message_type\":80,\"server_encounters_vote\":{\"person_id\":\"" + id + "\",\"vote\":2,\"photo_id\":\"\",\"vote_source\":1}}],\"is_background\":false}";
                 try
                 {
-                    await SendAndReturn(Model.SessionId, json);
+                    var res = await SendAndReturn(Model.SessionId, json);
+                    //could get error of reached likes limit, need to handle.
+                    //send email to user.
+                    Console.WriteLine("liked - "  + id + " likes left - " + likesLeft);
+
                     likesLeft--;
                 }
                 catch (Exception)
@@ -310,24 +325,39 @@ namespace BotsImpl
             return likesLeft;
         }
 
-        public async Task InitializeBot(UsersCredentialsModel user, MessageWithoutUser message)
+        private List<string> ExtractUserIdsFromList(string userIds)
+        {
+            var leftRemoved = userIds.Replace("[", "");
+            var rightRemoved = leftRemoved.Replace("]", "");
+            var allRemovd = rightRemoved.Replace("\"", "");
+            var slashRemoved = allRemovd.Replace("\\", "");
+            var li = slashRemoved.Split(",").ToList();
+            return li;
+        }
+
+        public async Task InitializeBot(ServiceCredentialsModel user, MessageWithoutUser message)
         {
             var users = CredentialDb.GetUsersModel(user.UserId);
-            if (users == null)
-            {
+            var userIdsFromList = ExtractUserIdsFromList(users.UsersIds);
+
+            //if (users == null || userIdsFromList.Count <= message.Likes)
+            //{
+                //Need to get last from db, if no last, get from api, then save last at db for next time.   
+
                 LocalProjectionModel projModel = new LocalProjectionModel();
                 var cookie = Login(user.Username, user.Password, message.UserId);
                 var projList = await LoginWithApi(user.Username, user.Password, cookie.SessionId);
+                
 
-                var last = await GetLast(projList, cookie.SessionId);
-                for (int i = 0; i < message.Likes / 20; i++)
+                for (int i = 1; i < message.Likes / 20; i++)
                 {
-                    last = await GetLast(last, cookie.SessionId);
-                    foreach (var item in last.UsersIds)
+                    if (projList.UsersIds.Count < message.Likes)
                     {
-                        projModel.UsersIds.Add(item);
+                        projList = await GetLast(projList, cookie.SessionId);
                     }
+
                 }
+
 
                 var serialized = JsonConvert.SerializeObject(projList.UsersIds);
                 var serializedProjections = JsonConvert.SerializeObject(projList.Projections);
@@ -346,17 +376,17 @@ namespace BotsImpl
                 };
                 CredentialDb.SaveProjections(projectionModel);
 
-            }
-            else
-            {
-                Model.SessionId = users.SessionId;
-                Model.UserId = users.UserId;
-                Model.UsersIds = users.UsersIds;
-                Model.Projections = users.Projections;
-            }
+            //}
+            //else
+            //{
+                //Model.SessionId = users.SessionId;
+                //Model.UserId = users.UserId;
+                //Model.UsersIds = users.UsersIds;
+                //Model.Projections = users.Projections;
+            //}
         }
 
-        public async Task ChangeDescriptions(string description, Service services,string sessionId)
+        public async Task ChangeDescriptions(string description, Service services, string sessionId)
         {
             var jsonInput = "{\"version\":1,\"message_type\":405,\"message_id\":22,\"body\":[{\"message_type\":405,\"server_save_user\":{\"user\":{\"user_id\":\"777595735\",\"profile_fields\":[{\"type\":2,\"value\":\"Test\",\"display_value\":\"\"},{\"type\":3,\"value\":\"None\",\"display_value\":\"\"},{\"type\":4,\"value\":\"None\",\"display_value\":\"\"},{\"type\":6,\"value\":\"None\",\"display_value\":\"\"},{\"type\":7,\"value\":\"None\",\"display_value\":\"\"},{\"type\":8,\"value\":\"None\",\"display_value\":\"\"},{\"type\":9,\"value\":\"None\",\"display_value\":\"\"},{\"type\":13,\"value\":\"0\",\"display_value\":\"\"},{\"type\":14,\"value\":\"0\",\"display_value\":\"\"},{\"type\":15,\"value\":\"None\",\"display_value\":\"\"},{\"type\":16,\"value\":\"None\",\"display_value\":\"\"},{\"type\":17,\"value\":\"None\",\"display_value\":\"\"}]},\"save_field_filter\":{\"projection\":[490]},\"return_field_filter\":{\"projection\":[490,50]}}}],\"is_background\":false}";
             var locationResultModel = await SendAndReturn(sessionId, jsonInput, "");

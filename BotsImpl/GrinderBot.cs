@@ -122,7 +122,7 @@ namespace BotsImpl
 
 
 
-        Task IBot.InitializeBot(UsersCredentialsModel user, MessageWithoutUser message)
+        Task IBot.InitializeBot(ServiceCredentialsModel user, MessageWithoutUser message)
         {
             throw new NotImplementedException();
         }

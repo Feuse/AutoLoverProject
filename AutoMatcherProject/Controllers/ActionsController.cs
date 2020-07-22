@@ -58,11 +58,41 @@ namespace AutoMatcherProject.Controllers
             }
             if (user == null)
             {
-                CredentialDB.SaveUserServiceCredentials(username, password, service);
+                var userId = _userManager.GetUserId(User);
+                CredentialDB.SaveUserServiceCredentials(username, password, service, userId);
             }
             return RedirectToAction("Dashboard", "Users");
         }
         [HttpGet]
+        private async Task<string> CheckCookies(string username, string password, Service service)
+        {
+            //var user = CredentialDB.Get(username, password, service);
+            var _bot = Factory.GetBot(service);
+            var cookie = _bot.Login(username, password);
+
+            if (cookie.SessionId != null)
+            {
+                var userId = await SaveCookieAndUsers(username, password, service, _bot, cookie);
+
+                //if (user == null)
+                //{
+                //    //UsersCredentialsModel model = new UsersCredentialsModel() { UserId = _userManager.GetUserId(User), Password = password, Username = username };
+                //    //ServiceModel sm = new ServiceModel
+                //    //{
+                //    //    Service = service,
+                //    //    ServiceUserId = userId
+                //    //};
+                //    //List<ServiceModel> serviceModels = new List<ServiceModel>();
+                //    //serviceModels.Add(sm);
+                //    //model.Services = serviceModels;
+
+                //    //CredentialDB.Save(model);
+                //}
+                return cookie.SessionId;
+            }
+
+            return null;
+        }
         public async Task<List<string>> GetUserServices()
         {
             var userId = _userManager.GetUserId(User);
@@ -91,40 +121,11 @@ namespace AutoMatcherProject.Controllers
             return null;
         }
         [HttpPost]
-        private async Task<string> CheckCookies(string username, string password, Service service)
-        {
-            var user = CredentialDB.Get(username, password, service);
-            var _bot = Factory.GetBot(service);
-            var cookie = _bot.Login(username, password);
-
-            if (cookie.SessionId != null)
-            {
-                var userId = await SaveCookieAndUsers(username, password, service, _bot, cookie);
-
-                if (user == null)
-                {
-                    UsersCredentialsModel model = new UsersCredentialsModel() { UserId = _userManager.GetUserId(User), Password = password, Username = username };
-                    ServiceModel sm = new ServiceModel
-                    {
-                        Service = service,
-                        ServiceUserId = userId
-                    };
-                    List<ServiceModel> serviceModels = new List<ServiceModel>();
-                    serviceModels.Add(sm);
-                    model.Services = serviceModels;
-
-                    CredentialDB.Save(model);
-                }
-                return cookie.SessionId;
-            }
-
-            return null;
-        }
 
         private async Task<string> SaveCookieAndUsers(string username, string password, Service service, IBot _bot, CookieModel cookie)
         {
             //Save users and cookie to database.
-            cookie.Expiry = DateTime.SpecifyKind((DateTime)cookie.Expiry, DateTimeKind.Utc);
+            //cookie.Expiry = DateTime.SpecifyKind((DateTime)cookie.Expiry, DateTimeKind.Utc);
             var projectionModel = await _bot.LoginWithApi(username, password, cookie.SessionId);
             projectionModel.UserId = _userManager.GetUserId(User);
             projectionModel.SessionId = cookie.SessionId;
@@ -200,40 +201,48 @@ namespace AutoMatcherProject.Controllers
         [HttpGet]
         public async Task<List<PictureUrlModel>> GetUserImages(Service service)
         {
+            List<string> botPictureIds = new List<string>();
+            List<string> pictureIds = new List<string>();
             //gets the user id from the session
             var userId = _userManager.GetUserId(User);
             //gets service sessisionId
             var sessionId = _sessionManager.GetSession(service);
             var bot = Factory.GetBot(service);
-            List<PictureUrlModel> list = await bot.GetImages(sessionId, userId);
 
-            var pictures = CredentialDB.GetBadooPictures(userId);
+            List<PictureUrlModel> botList = await bot.GetImages(sessionId, userId);
+            List<PictureUrlModel> presistanceList = CredentialDB.GetBadooPictures(userId);
+            List<PictureUrlModel> updatedPicturesList = new List<PictureUrlModel>();
+            List<PictureUrlModel> orderedBotList = botList.OrderBy(a => a.PhotoId).ToList();
+            List<PictureUrlModel> orderedPersistanceList = botList.OrderBy(a => a.PhotoId).ToList();
+           
 
-            var firstNotSecond = list.Except(pictures).ToList();
-            foreach (var picture in firstNotSecond)
+            for (int i = 0; i < orderedBotList.Count-1; i++)
             {
-                picture.UserId = userId;
+                if (!(orderedBotList[i].PhotoId== orderedPersistanceList[i].PhotoId))
+                {
+                    updatedPicturesList.Add(orderedBotList[i]);
+                }
             }
-            if (firstNotSecond != null)
-            {      
-                CredentialDB.SaveBadooPictures(firstNotSecond);
+            if (updatedPicturesList.Count > 0)
+            {        
+                CredentialDB.SaveBadooPictures(updatedPicturesList);
             }
-            return list;
+            return botList;
         }
         [HttpPost]
         public async Task<List<PictureUrlModel>> GetServicePictures(Service service)
         {
             var userId = _userManager.GetUserId(User);
-            var pc = CredentialDB.GetBadooPictures(userId);
+          
             return CredentialDB.GetBadooPictures(userId);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Schedule(DateTime time, int likes, Service service, ApplicationUser user)
+        public async Task<IActionResult> Schedule(int messageId,DateTime time, int likes, Service service, ApplicationUser user)
         {
             var userId = _userManager.GetUserId(HttpContext.User);
             var _user = _userManager.GetUserAsync(HttpContext.User).Result;
-            await SchedulrAbstraction.Schedule(userId, time, likes, service, _user);
+            await SchedulrAbstraction.Schedule(messageId, time, likes, service, _user);
 
             return RedirectToAction("Dashboard", "Users");
         }

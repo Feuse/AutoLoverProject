@@ -32,7 +32,7 @@ namespace ServicesImpl
         public void SetSession(Service service, CookieModel cookie)
         {
             var sessionString = GetServiceSessionName(service);
-            _httpContextAccessor.HttpContext.Session.SetString(sessionString,cookie.SessionId);
+            _httpContextAccessor.HttpContext.Session.SetString(sessionString, cookie.SessionId);
         }
 
         public string GetSession(Service service)

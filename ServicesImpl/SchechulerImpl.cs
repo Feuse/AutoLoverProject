@@ -24,7 +24,7 @@ namespace ServicesImpl
             return user.Id;
         }
 
-        public async Task Schedule(int messageId, DateTime time, int likes, Service service, IdentityUser user)
+        public async Task Schedule(int userId, DateTime time, int likes, Service service, IdentityUser user)
         {
             if (time == DateTime.MinValue)
             {
@@ -32,7 +32,7 @@ namespace ServicesImpl
             }
             _uniqueId = Guid.NewGuid().ToString();
             _userId = GetUser(user);
-            await StartSchedule(messageId, likes, time, service);
+            await StartSchedule(userId, likes, time, service);
 
         }
 

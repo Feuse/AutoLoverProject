@@ -23,13 +23,16 @@ namespace Utils
 
             base.OnModelCreating(builder);
         }
-      
-        
 
-        public DbSet<Message> Messages { get; set; }
         public DbSet<UsersCredentialsModel> UsersCredentialsModels { get; set; }
+        public DbSet<ServiceModel> ServiceModel { get; set; }
+        public DbSet<Message> Messages { get; set; }
         public DbSet<CookieModel> CookieModel { get; set; }
-
-
+        public DbSet<ProjectionModel> ProjectionModel { get; set; }
+        public DbSet<ServiceCredentialsModel> ServiceCredentialsModel { get; set; }
+        public DbSet<PictureUrlModel> PictureUrlModel { get; set; }
     }
+
+
 }
+

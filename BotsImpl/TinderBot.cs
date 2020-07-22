@@ -144,18 +144,11 @@ namespace BotsImpl
             throw new NotImplementedException();
         }
 
-        Task IBot.InitializeBot(UsersCredentialsModel user, MessageWithoutUser message)
+        Task IBot.InitializeBot(ServiceCredentialsModel user, MessageWithoutUser message)
         {
             throw new NotImplementedException();
         }
 
-       
-        CookieModel IBot.Login(string username, string password, string userId)
-        {
-            throw new NotImplementedException();
-        }
-
-    
 
         Task<LocalProjectionModel> IBot.LoginWithApi(string username, string password, string sessionId)
         {

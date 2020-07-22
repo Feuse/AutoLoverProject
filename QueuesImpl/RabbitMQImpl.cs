@@ -18,7 +18,7 @@ namespace QueuesImpl
         private readonly IBotFactory _factory;
         private IConsumeSchechuler _scheduler;
         private ICredentialDb _context;
-        
+
         public RabbitMQImpl(IBotFactory fac, IConsumeSchechuler scheduler, ICredentialDb context)
         {
             _factory = fac;
@@ -39,11 +39,11 @@ namespace QueuesImpl
                                  exclusive: false,
                                  autoDelete: false,
                                  arguments: null);
-
+            int result = 0;
             consumer.Received += async (model, ea) =>
             {
                 ServicePropertiesModel properties = null;
-                int result = 0;
+
                 Console.WriteLine("waiting for queue");
                 var _body = ea.Body;
                 var msg = Encoding.UTF8.GetString(_body);
@@ -52,7 +52,7 @@ namespace QueuesImpl
                 IBot bot = _factory.GetBot(service);
 
                 var user = await GetUserNamePassword(message.UserId);
-                
+
                 await bot.InitializeBot(user, message);
                 result = await bot.ExecuteLikes(message.Likes);
                 if (result > 0)
@@ -60,11 +60,15 @@ namespace QueuesImpl
                     await _scheduler.StartSchedule(message.MessageId, result, service);
                     Console.WriteLine($"{result} likes left");
                 }
-                bot.ShutDown();
+                //_channel.BasicAck(ea.DeliveryTag, false);
+                
             };
-            _channel.BasicConsume(queue: "messages",
-                                       autoAck: true,
-                                       consumer: consumer);
+           
+
+                _channel.BasicConsume(queue: "messages",
+                                           autoAck: true,
+                                          consumer: consumer);
+            
             Console.ReadLine();
 
         }
@@ -127,9 +131,10 @@ namespace QueuesImpl
             return Encoding.UTF8.GetBytes(newJson);
         }
 
-        public async Task<UsersCredentialsModel> GetUserNamePassword(string id)
+        public async Task<ServiceCredentialsModel> GetUserNamePassword(string id)
         {
-            return _context.GetById(id);
+            return await _context.GetByIdServiceCredentialsModel(id);
+
         }
     }
 }

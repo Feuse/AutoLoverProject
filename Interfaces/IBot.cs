@@ -18,7 +18,7 @@ namespace Interfaces
         public Task ChangeDescription(string proffesion, string companyName, string school, string sessionId);
         public void ShutDown();
         public Task<LocalProjectionModel> GetLast(LocalProjectionModel projList, string sessionId);
-        public Task InitializeBot(UsersCredentialsModel user, MessageWithoutUser message);
+        public Task InitializeBot(ServiceCredentialsModel user, MessageWithoutUser message);
         public Task ChangeDescriptions(string description, Service services,string sessionId);
     }
 }

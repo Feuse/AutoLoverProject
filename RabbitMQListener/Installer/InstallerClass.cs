@@ -4,7 +4,7 @@ using BotsImpl;
 using ConsumerScheduler;
 using DbServices;
 using Interfaces;
-using JobsImpl;
+
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -41,7 +41,7 @@ namespace RabbitMQListener.Installer
             builder.RegisterType<ConsumerSchechuler>().AsImplementedInterfaces();
             builder.RegisterType<SchedulerImpl>().AsImplementedInterfaces();
             builder.RegisterModule(new QuartzAutofacJobsModule(typeof(ConsumerSchedulerJob).Assembly)).RegisterAssemblyModules();
-            builder.RegisterModule(new QuartzAutofacJobsModule(typeof(DailyCleanUpJob).Assembly)).RegisterAssemblyModules();
+            //builder.RegisterModule(new QuartzAutofacJobsModule(typeof(DailyCleanUpJob).Assembly)).RegisterAssemblyModules();
             builder.RegisterInstance(QuartzInstance.Instance).AsImplementedInterfaces();
             return builder.Build();
 
