@@ -13,6 +13,6 @@ namespace Models
         public string ServiceId { get; set; }
         public Service Service { get; set; }
         public string UsersCredentialsModelUserId { get; set; }
-        public string ServiceUserId { get; set; }
+        public UsersCredentialsModel Model { get; set; }
     }
 }

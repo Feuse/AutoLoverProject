@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Models
 {
-    public partial class UsersResponseModel
+    public class UsersResponseModel
     {
         [JsonProperty("$gpb")]
         public string Gpb { get; set; }
@@ -35,7 +35,7 @@ namespace Models
         public string Vhost { get; set; }
     }
     [JsonObject(Title ="body")]
-    public partial class BodyUsersResponseModel
+    public class BodyUsersResponseModel
     {
         [JsonProperty("$gpb")]
         public string Gpb { get; set; }
@@ -47,7 +47,7 @@ namespace Models
         public long MessageType2UsersResponseModel { get; set; }
     }
     [JsonObject(Title = "client.encounters")]
-    public partial class ClientEncountersResponseModel
+    public class ClientEncountersResponseModel
     {
         [JsonProperty("$gpb")]
         public string Gpb { get; set; }
@@ -68,7 +68,7 @@ namespace Models
         public PromoBs PromoBanner { get; set; }
     }
     [JsonObject(Title = "promo.b")]
-    public partial class PromoBs
+    public class PromoBs
     {
         [JsonProperty("$gpb")]
         public string Gpb { get; set; }
@@ -113,7 +113,7 @@ namespace Models
         public RedirectPagee RedirectPage { get; set; }
     }
     [JsonObject(Title = "picture")]
-    public partial class Picturese
+    public class Picturese
     {
         [JsonProperty("$gpb")]
         public string Gpb { get; set; }
@@ -122,7 +122,7 @@ namespace Models
         public string DisplayImagesUsersResponseModel { get; set; }
     }
     [JsonObject(Title = "redirect.page")]
-    public partial class RedirectPagee
+    public class RedirectPagee
     {
         [JsonProperty("$gpb")]
         public string Gpb { get; set; }
@@ -134,7 +134,7 @@ namespace Models
         public string UserId { get; set; }
     }
     [JsonObject(Title = "quota")]
-    public partial class QuotaResponseModel
+    public class QuotaResponseModel
     {
         [JsonProperty("$gpb")]
         public string Gpb { get; set; }
@@ -143,7 +143,7 @@ namespace Models
         public long YesVotesQuota { get; set; }
     }
     [JsonObject(Title = "result")]
-    public partial class Result
+    public class Result
     {
         [JsonProperty("$gpb")]
         public string Gpb { get; set; }
@@ -155,7 +155,7 @@ namespace Models
         public UserResponseModel User { get; set; }
     }
     [JsonObject(Title = "user")]
-    public partial class UserResponseModel
+    public class UserResponseModel
     {
         [JsonProperty("$gpb")]
         public string Gpb { get; set; }
@@ -203,7 +203,7 @@ namespace Models
         public string OnlineStatusText { get; set; }
 
         [JsonProperty("albums")]
-        public List<Albumeeessss> Albums { get; set; }
+        public List<UserResponseAlbum> Albums { get; set; }
 
         [JsonProperty("interests_in_common")]
         public long InterestsInCommon { get; set; }
@@ -236,7 +236,7 @@ namespace Models
         public string LastRiseupTimeMessage { get; set; }
     }
     [Newtonsoft.Json.JsonObject(Title = "album")]
-    public partial class Albumeeessss
+    public class UserResponseAlbum
     {
         [JsonProperty("$gpb")]
         public string GpbUsersResponseModel { get; set; }
@@ -266,7 +266,7 @@ namespace Models
         public long AlbumTypeUsersResponseModel { get; set; }
     }
     [Newtonsoft.Json.JsonObject(Title = "photo")]
-    public partial class PhotoUserModel
+    public class PhotoUserModel
     {
         [JsonProperty("$gpb")]
         public string Gpb { get; set; }
@@ -281,7 +281,7 @@ namespace Models
         public string LargeUrlUsersResponseModel { get; set; }
 
         [JsonProperty("large_photo_size")]
-        public LargePhotoSize LargePhotoSizeUsersResponseModel { get; set; }
+        public LargePhotoSizeAlbumResponseModel LargePhotoSizeUsersResponseModel { get; set; }
 
         [JsonProperty("face_top_left", NullValueHandling = NullValueHandling.Ignore)]
         public FaceResponseModel FaceTopLeftUsersResponseModel { get; set; }
@@ -299,7 +299,7 @@ namespace Models
         public VideoResModel Video { get; set; }
     }
     [Newtonsoft.Json.JsonObject(Title = "face")]
-    public partial class FaceResponseModel
+    public class FaceResponseModel
     {
         [JsonProperty("$gpb")]
         public string Gpb { get; set; }
@@ -311,7 +311,7 @@ namespace Models
         public long Y { get; set; }
     }
     [Newtonsoft.Json.JsonObject(Title = "large.photo.size")]
-    public partial class LargePhotoSizeResModel
+    public class LargePhotoSizeResModel
     {
         [JsonProperty("$gpb")]
         public string Gpb { get; set; }
@@ -323,7 +323,7 @@ namespace Models
         public long HeightUsersResponseModel { get; set; }
     }
     [Newtonsoft.Json.JsonObject(Title = "video")]
-    public partial class VideoResModel
+    public class VideoResModel
     {
         [JsonProperty("$gpb")]
         public string Gpb { get; set; }
@@ -335,7 +335,7 @@ namespace Models
         public bool IsProcessing { get; set; }
     }
     [Newtonsoft.Json.JsonObject(Title = "profile.field")]
-    public partial class ProfileFieldResModel
+    public class ProfileFieldResModel
     {
         [JsonProperty("$gpb")]
         public string Gpb { get; set; }
@@ -353,7 +353,7 @@ namespace Models
         public string DisplayValueUsersResponseModel { get; set; }
     }
     [Newtonsoft.Json.JsonObject(Title = "social.network")]
-    public partial class SocialNetworkResModel
+    public class SocialNetworkResModel
     {
         [JsonProperty("$gpb")]
         public string Gpb3223 { get; set; }
@@ -368,7 +368,7 @@ namespace Models
         public string HandleUsersResponseModel { get; set; }
     }
     [Newtonsoft.Json.JsonObject(Title = "external.provider")]
-    public partial class ExternalProviderResModel
+    public class ExternalProviderResModel
     {
         [JsonProperty("$gpb")]
         public string Gpb { get; set; }

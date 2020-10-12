@@ -1,6 +1,5 @@
 ﻿    using System;
     using System.Collections.Generic;
-
     using System.Globalization;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Converters;
@@ -28,7 +27,7 @@ namespace Models
         public long ResponsesCount { get; set; }
     }
     [JsonObject(Title ="body")]
-    public partial class BodyLoginResponseMOdel
+    public class BodyLoginResponseMOdel
     {
         [JsonProperty("$gpb")]
         public string Gpb2 { get; set; }
@@ -52,7 +51,7 @@ namespace Models
         public ClientSpotlightMetaData ClientSpotlightMetaData { get; set; }
     }
 
-    public partial class AppSettings
+    public class AppSettings
     {
         [JsonProperty("$gpb")]
         public string Gpb3 { get; set; }
@@ -178,7 +177,7 @@ namespace Models
         public long Context { get; set; }
     }
 
-    public partial class Menu
+    public class Menu
     {
         [JsonProperty("$gpb")]
         public string Gpb4 { get; set; }
@@ -187,7 +186,7 @@ namespace Models
         public List<Section> Sections { get; set; }
     }
 
-    public partial class Section
+    public class Section
     {
         [JsonProperty("$gpb")]
         public string Gpb5 { get; set; }
@@ -196,7 +195,7 @@ namespace Models
         public List<Item> Items { get; set; }
     }
 
-    public partial class Item
+    public class Item
     {
         [JsonProperty("$gpb")]
         public string Gpb6 { get; set; }
@@ -208,7 +207,7 @@ namespace Models
         public string Name { get; set; }
     }
 
-    public partial class ClientCommonSettings
+    public class ClientCommonSettings
     {
         [JsonProperty("$gpb")]
         public string Gpb7 { get; set; }
@@ -322,7 +321,7 @@ namespace Models
         public ExperimentalWelcomeData ExperimentalWelcomeData { get; set; }
     }
 
-    public partial class ClientCommonSettingsABTestingSettings
+    public class ClientCommonSettingsABTestingSettings
     {
         [JsonProperty("$gpb")]
         public string Gpb8 { get; set; }
@@ -334,7 +333,7 @@ namespace Models
         public List<Test> LexemeTests { get; set; }
     }
 
-    public partial class Test
+    public class Test
     {
         [JsonProperty("$gpb")]
         public string Gpb9{ get; set; }
@@ -350,7 +349,7 @@ namespace Models
         public long SettingsId { get; set; }
     }
 
-    public partial class ApplicationFeature
+    public class ApplicationFeature
     {
         [JsonProperty("$gpb")]
         public string Gpb10 { get; set; }
@@ -386,7 +385,7 @@ namespace Models
         public AllowWebrtcCallConfig AllowWebrtcCallConfig { get; set; }
     }
 
-    public partial class AllowWebrtcCallConfig
+    public class AllowWebrtcCallConfig
     {
         [JsonProperty("$gpb")]
         public string Gpb11 { get; set; }
@@ -410,7 +409,7 @@ namespace Models
         public long StatePollingPeriodSec { get; set; }
     }
 
-    public partial class GoalProgress
+    public class GoalProgress
     {
         [JsonProperty("$gpb")]
         public string Gpb12 { get; set; }
@@ -422,7 +421,7 @@ namespace Models
         public long Progress { get; set; }
     }
 
-    public partial class ChangeHost
+    public class ChangeHost
     {
         [JsonProperty("$gpb")]
         public string Gpb13 { get; set; }
@@ -437,7 +436,7 @@ namespace Models
         public Uri FallbackEndpoint { get; set; }
     }
 
-    public partial class ChatSettings
+    public class ChatSettings
     {
         [JsonProperty("$gpb")]
         public string Gpb14 { get; set; }
@@ -455,7 +454,7 @@ namespace Models
         public AudioRecordingSettings AudioRecordingSettings { get; set; }
     }
 
-    public partial class AudioRecordingSettings
+    public class AudioRecordingSettings
     {
         [JsonProperty("$gpb")]
         public string Gpb15 { get; set; }
@@ -473,7 +472,7 @@ namespace Models
         public long WaveformLength { get; set; }
     }
 
-    public partial class AudioFormat
+    public class AudioFormat
     {
         [JsonProperty("$gpb")]
         public string Gpb16 { get; set; }
@@ -494,7 +493,7 @@ namespace Models
         public bool VbrEnable { get; set; }
     }
 
-    public partial class DevFeature
+    public class DevFeature
     {
         [JsonProperty("$gpb")]
         public string Gpb17 { get; set; }
@@ -506,7 +505,7 @@ namespace Models
         public bool Enabled { get; set; }
     }
 
-    public partial class EncountersQueueSettings
+    public class EncountersQueueSettings
     {
         [JsonProperty("$gpb")]
         public string Gpb18 { get; set; }
@@ -518,7 +517,7 @@ namespace Models
         public long NumOfCompletedVotesToReport { get; set; }
     }
 
-    public partial class ExperimentalWelcomeData
+    public class ExperimentalWelcomeData
     {
         [JsonProperty("$gpb")]
         public string Gpb19 { get; set; }
@@ -530,7 +529,7 @@ namespace Models
         public long TotalOnlineCounter { get; set; }
     }
 
-    public partial class ExternalEndpoint
+    public class ExternalEndpoint
     {
         [JsonProperty("$gpb")]
         public string Gpb20 { get; set; }
@@ -542,7 +541,7 @@ namespace Models
         public string Url { get; set; }
     }
 
-    public partial class GroupChatsSettings
+    public class GroupChatsSettings
     {
         [JsonProperty("$gpb")]
         public string Gpb21 { get; set; }
@@ -557,7 +556,7 @@ namespace Models
         public long MaxGroupNameLength { get; set; }
     }
 
-    public partial class LivestreamSettings
+    public class LivestreamSettings
     {
         [JsonProperty("$gpb")]
         public string Gpb22 { get; set; }
@@ -575,7 +574,7 @@ namespace Models
         public List<long> SuppressEvents { get; set; }
     }
 
-    public partial class PhotoUploadSettings
+    public class PhotoUploadSettings
     {
         [JsonProperty("$gpb")]
         public string Gpb23 { get; set; }
@@ -590,7 +589,7 @@ namespace Models
         public MaxSizeFast MaxSizeSlow { get; set; }
     }
 
-    public partial class MaxSizeFast
+    public class MaxSizeFast
     {
         [JsonProperty("$gpb")]
         public string Gpb24 { get; set; }
@@ -602,7 +601,7 @@ namespace Models
         public long Height { get; set; }
     }
 
-    public partial class PreloadAnimation
+    public class PreloadAnimation
     {
         [JsonProperty("$gpb")]
         public string Gpb25 { get; set; }
@@ -620,7 +619,7 @@ namespace Models
         public LottieParams LottieParams { get; set; }
     }
 
-    public partial class LottieParams
+    public class LottieParams
     {
         [JsonProperty("$gpb")]
         public string Gpb26 { get; set; }
@@ -635,7 +634,7 @@ namespace Models
         public List<string> ImageUrls { get; set; }
     }
 
-    public partial class SdkIntegration
+    public class SdkIntegration
     {
         [JsonProperty("$gpb")]
         public string Gpb27 { get; set; }
@@ -647,7 +646,7 @@ namespace Models
         public string AppKey { get; set; }
     }
 
-    public partial class TooltipConfig
+    public class TooltipConfig
     {
         [JsonProperty("$gpb")]
         public string Gpb28 { get; set; }
@@ -659,7 +658,7 @@ namespace Models
         public List<Tooltip> Tooltips { get; set; }
     }
 
-    public partial class Tooltip
+    public class Tooltip
     {
         [JsonProperty("$gpb")]
         public string Gpb29 { get; set; }
@@ -671,7 +670,7 @@ namespace Models
         public List<Button> Buttons { get; set; }
     }
 
-    public partial class Button
+    public class Button
     {
         [JsonProperty("$gpb")]
         public string Gpb30 { get; set; }
@@ -686,7 +685,7 @@ namespace Models
         public string Text { get; set; }
     }
 
-    public partial class Country
+    public class Country
     {
         [JsonProperty("$gpb")]
         public string Gpb31 { get; set; }
@@ -716,7 +715,7 @@ namespace Models
         public long? PhoneNumberLength { get; set; }
     }
 
-    public partial class PhoneLength
+    public class PhoneLength
     {
         [JsonProperty("$gpb")]
         public string Gpb32 { get; set; }
@@ -728,7 +727,7 @@ namespace Models
         public long MaxValue { get; set; }
     }
 
-    public partial class VideoUploadSettings
+    public class VideoUploadSettings
     {
         [JsonProperty("$gpb")]
         public string Gpb33 { get; set; }
@@ -752,7 +751,7 @@ namespace Models
         public AudioFormat AudioFormat { get; set; }
     }
 
-    public partial class Format
+    public class Format
     {
         [JsonProperty("$gpb")]
         public string Gpb34 { get; set; }
@@ -767,7 +766,7 @@ namespace Models
         public MaxSizeFast MaxResolution { get; set; }
     }
 
-    public partial class WebPushInitParams
+    public class WebPushInitParams
     {
         [JsonProperty("$gpb")]
         public string Gpb35 { get; set; }
@@ -785,7 +784,7 @@ namespace Models
         public List<Param> Params { get; set; }
     }
 
-    public partial class Param
+    public class Param
     {
         [JsonProperty("$gpb")]
         public string Gpb36 { get; set; }
@@ -797,7 +796,7 @@ namespace Models
         public string Value { get; set; }
     }
 
-    public partial class WebSpecificOptions
+    public class WebSpecificOptions
     {
         [JsonProperty("$gpb")]
         public string Gpb37 { get; set; }
@@ -809,7 +808,7 @@ namespace Models
         public bool HighlightLexemes { get; set; }
     }
 
-    public partial class ClientLoginSuccess
+    public class ClientLoginSuccess
     {
         [JsonProperty("$gpb")]
         public string Gpb38 { get; set; }
@@ -851,7 +850,7 @@ namespace Models
         public long ExternalProviderTokenRefresh { get; set; }
     }
 
-    public partial class ClientLoginSuccessABTestingSettings
+    public class ClientLoginSuccessABTestingSettings
     {
         [JsonProperty("$gpb")]
         public string Gpb39 { get; set; }
@@ -860,7 +859,7 @@ namespace Models
         public List<Test> Tests { get; set; }
     }
 
-    public partial class UserInfo
+    public class UserInfo
     {
         [JsonProperty("$gpb")]
         public string Gpb40 { get; set; }
@@ -932,7 +931,7 @@ namespace Models
         public QuestionsInfo QuestionsInfo { get; set; }
     }
 
-    public partial class City
+    public class City
     {
         [JsonProperty("$gpb")]
         public string Gpb41 { get; set; }
@@ -944,7 +943,7 @@ namespace Models
         public string Name { get; set; }
     }
 
-    public partial class Location
+    public class Location
     {
         [JsonProperty("$gpb")]
         public string Gpb42 { get; set; }
@@ -953,7 +952,7 @@ namespace Models
         public Uri DisplayImage { get; set; }
     }
     [Newtonsoft.Json.JsonObject(Title = "profile.field")]
-    public partial class ProfileFields
+    public class ProfileFields
     {
         [JsonProperty("$gpb")]
         public string Gpb43 { get; set; }
@@ -974,7 +973,7 @@ namespace Models
         public long? RequiredAction { get; set; }
     }
     [JsonObject(Title = "user.info.profile.photo")]
-    public partial class UserInfoProfilePhotos
+    public class UserInfoProfilePhotos
     {
         [JsonProperty("$gpb")]
         public string Gpb44 { get; set; }
@@ -1004,7 +1003,7 @@ namespace Models
         public long LargeUrlExpirationTs { get; set; }
     }
     [JsonObject(Title ="face")]
-    public partial class Face4442
+    public class Face4442
     {
         [JsonProperty("$gpb")]
         public string Gpb45 { get; set; }
@@ -1016,7 +1015,7 @@ namespace Models
         public long Y2 { get; set; }
     }
     [JsonObject(Title = "questions.info")]
-    public partial class QuestionsInfo
+    public class QuestionsInfo
     {
         [JsonProperty("$gpb")]
         public string Gpb46 { get; set; }
@@ -1025,7 +1024,7 @@ namespace Models
         public ActionPromos ActionPromo { get; set; }
     }
     [JsonObject(Title = "pction.promo")]
-    public partial class ActionPromos
+    public class ActionPromos
     {
         [JsonProperty("$gpb")]
         public string Gpb47 { get; set; }
@@ -1049,7 +1048,7 @@ namespace Models
         public List<Button> Buttons { get; set; }
     }
     [JsonObject(Title = "picture")]
-    public partial class Pictures
+    public class Pictures
     {
         [JsonProperty("$gpb")]
         public string Gpb48 { get; set; }
@@ -1058,7 +1057,7 @@ namespace Models
         public Uri DisplayImages { get; set; }
     }
     [JsonObject(Title ="social.network")]
-    public partial class SocialNetworkResModels
+    public class SocialNetworkResModels
     {
         [JsonProperty("$gpb")]
         public string Gpb49 { get; set; }
@@ -1073,7 +1072,7 @@ namespace Models
         public string Handle { get; set; }
     }
     [Newtonsoft.Json.JsonObject(Title = "external.provider")]
-    public partial class ExternalProviderResModels
+    public class ExternalProviderResModels
     {
         [JsonProperty("$gpb")]
         public string Gpb50 { get; set; }
@@ -1088,7 +1087,7 @@ namespace Models
         public long Type { get; set; }
     }
 
-    public partial class VerifiedInformation
+    public class VerifiedInformation
     {
         [JsonProperty("$gpb")]
         public string Gpb51 { get; set; }
@@ -1103,7 +1102,7 @@ namespace Models
         public long VerificationStatus { get; set; }
     }
 
-    public partial class Method
+    public class Method
     {
         [JsonProperty("$gpb")]
         public string Gpb52 { get; set; }
@@ -1142,7 +1141,7 @@ namespace Models
         public PhotoVerification PhotoVerification { get; set; }
     }
 
-    public partial class ExternalProviderData
+    public class ExternalProviderData
     {
         [JsonProperty("$gpb")]
         public string Gpb53 { get; set; }
@@ -1173,7 +1172,7 @@ namespace Models
         public List<Uri> MandatoryReadPermissions { get; set; }
     }
 
-    public partial class AuthData
+    public class AuthData
     {
         [JsonProperty("$gpb")]
         public string Gpb54 { get; set; }
@@ -1191,7 +1190,7 @@ namespace Models
         public string AppKey { get; set; }
     }
 
-    public partial class ExternalProviderDataProfilePhoto
+    public class ExternalProviderDataProfilePhoto
     {
         [JsonProperty("$gpb")]
         public string Gpb55 { get; set; }
@@ -1200,7 +1199,7 @@ namespace Models
         public Uri PreviewUrl { get; set; }
     }
 
-    public partial class PhotoVerification
+    public class PhotoVerification
     {
         [JsonProperty("$gpb")]
         public string Gpb56 { get; set; }
@@ -1209,7 +1208,7 @@ namespace Models
         public Challenge Challenge { get; set; }
     }
 
-    public partial class Challenge
+    public class Challenge
     {
         [JsonProperty("$gpb")]
         public string Gpb57 { get; set; }
@@ -1230,7 +1229,7 @@ namespace Models
         public long PromoBlockPosition { get; set; }
     }
 
-    public partial class ClientSpotlightMetaData
+    public class ClientSpotlightMetaData
     {
         [JsonProperty("$gpb")]
         public string Gpb58 { get; set; }
@@ -1254,7 +1253,7 @@ namespace Models
         public SpotlightServerTyped SpotlightServerTyped { get; set; }
     }
 
-    public partial class SpotlightServerTyped
+    public class SpotlightServerTyped
     {
         [JsonProperty("$gpb")]
         public string Gpb59 { get; set; }
@@ -1290,7 +1289,7 @@ namespace Models
         public long MaxBets { get; set; }
     }
 
-    public partial class CometConfiguration
+    public class CometConfiguration
     {
         [JsonProperty("$gpb")]
         public string Gpb60 { get; set; }

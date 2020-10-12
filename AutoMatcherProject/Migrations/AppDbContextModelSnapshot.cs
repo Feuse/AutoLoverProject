@@ -220,19 +220,19 @@ namespace AutoMatcherProject1.Migrations
 
             modelBuilder.Entity("Models.CookieModel", b =>
                 {
-                    b.Property<string>("UserId")
+                    b.Property<string>("SessionId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<DateTime?>("Expiry")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset?>("Expiry")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<int>("Service")
                         .HasColumnType("int");
 
-                    b.Property<string>("SessionId")
+                    b.Property<string>("UserId")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("UserId");
+                    b.HasKey("SessionId");
 
                     b.ToTable("CookieModel");
                 });
@@ -271,6 +271,9 @@ namespace AutoMatcherProject1.Migrations
 
                     b.Property<string>("PreviewUrl")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Service")
+                        .HasColumnType("int");
 
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(max)");
@@ -317,6 +320,9 @@ namespace AutoMatcherProject1.Migrations
                     b.Property<int>("Service")
                         .HasColumnType("int");
 
+                    b.Property<string>("ServiceUserId")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(max)");
 
@@ -336,9 +342,6 @@ namespace AutoMatcherProject1.Migrations
 
                     b.Property<int>("Service")
                         .HasColumnType("int");
-
-                    b.Property<string>("ServiceUserId")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UsersCredentialsModelUserId")
                         .HasColumnType("nvarchar(450)");
@@ -367,6 +370,31 @@ namespace AutoMatcherProject1.Migrations
                     b.HasKey("UserId");
 
                     b.ToTable("UsersCredentialsModels");
+                });
+
+            modelBuilder.Entity("UtilModels.InstagramMediaModel", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("MediaType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MediaUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Timestamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Username")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("InstagramMediaModel");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -431,7 +459,7 @@ namespace AutoMatcherProject1.Migrations
 
             modelBuilder.Entity("Models.ServiceModel", b =>
                 {
-                    b.HasOne("Models.UsersCredentialsModel", null)
+                    b.HasOne("Models.UsersCredentialsModel", "Model")
                         .WithMany("Services")
                         .HasForeignKey("UsersCredentialsModelUserId");
                 });

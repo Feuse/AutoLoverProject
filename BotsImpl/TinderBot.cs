@@ -1,6 +1,9 @@
 ﻿
 using Interfaces;
+using Microsoft.AspNetCore.Http;
 using Models;
+using RabbitMQ.Client;
+using RabbitMQ.Client.Events;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -9,11 +12,25 @@ namespace BotsImpl
 {
     public class TinderBot : IBot
     {
-        public TinderBot()
+        private ICredentialDb Db;
+        private IJsonFactory Factory;
+        public TinderBot(ICredentialDb db, IJsonFactory factory)
         {
+            Db = db;
+            Factory = factory;
+        }
+
+        public Task AuthenticateBadooInstagram(string sessionId)
+        {
+            throw new NotImplementedException();
         }
 
         public Task ChangeDescription(string sessionId, string proffesion, string companyName, string school)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task ChangeDescription(string proffesion, string companyName, string school, string sessionId, int sessionCount)
         {
             throw new NotImplementedException();
         }
@@ -44,6 +61,16 @@ namespace BotsImpl
         }
 
         public Task<int> ExecuteLikes(int likes)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<int> ExecuteLikes(int likes, IModel channel, EventingBasicConsumer consumer)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<int> ExecuteLikes(MessageWithoutUser likes)
         {
             throw new NotImplementedException();
         }
@@ -83,6 +110,11 @@ namespace BotsImpl
             throw new NotImplementedException();
         }
 
+        public Task<GetSearchSettingResponseModel> GetUserSettings(string sessionId)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<ServicePropertiesModel> InitializeBot(UsersCredentialsModel user, MessageWithoutUser message)
         {
             throw new NotImplementedException();
@@ -95,10 +127,16 @@ namespace BotsImpl
 
         public CookieModel Login(string username, string password, string userId)
         {
-            return null;
+            return new CookieModel() { Expiry = new DateTimeOffset(new DateTime(1993, 05, 05)), Service = Service.Tinder, SessionId = "demosessionid", UserId = "323124fsddsadas" };
+
         }
 
         public Task<List<long>> LoginWithApi(string username, string password, string sessionId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task RemoveImage(string sessionId, string imgId)
         {
             throw new NotImplementedException();
         }
@@ -113,13 +151,47 @@ namespace BotsImpl
             throw new NotImplementedException();
         }
 
+        public Task<AppStartupModelResponseModel> StartupBot(string sessionId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task UpdateUserSearchSettings(long ageStart, long ageEnd, long distance, long[] genders, string sessionId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task UploadImage(string sessionId, IFormFile photo)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task UploadImage(string sessionId, List<string> images)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task UploadImage(string sessionId, List<InstagramPartialModel> images)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> UploadImage(string sessionId, List<InstagramPartialModel> images, string url)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task IBot.ChangeAboutMe(string sessionId, string input)
+        {
+            throw new NotImplementedException();
+        }
+
         Task IBot.ChangeDescription(string proffesion, string companyName, string school, string sessionId)
         {
             throw new NotImplementedException();
         }
 
-
-        Task<int> IBot.ExecuteLikes(int likes)
+        Task<int> IBot.ExecuteLikes(MessageWithoutUser likes)
         {
             throw new NotImplementedException();
         }
@@ -144,11 +216,20 @@ namespace BotsImpl
             throw new NotImplementedException();
         }
 
+        Task<LoginResponseModel> IBot.GetUser(string sessionId)
+        {
+            throw new NotImplementedException();
+        }
+
         Task IBot.InitializeBot(ServiceCredentialsModel user, MessageWithoutUser message)
         {
             throw new NotImplementedException();
         }
 
+        CookieModel IBot.Login(string username, string password, string userId)
+        {
+            return new CookieModel() { Expiry = new DateTimeOffset(new DateTime(1993, 05, 05)), Service = Service.Tinder, SessionId = "demosessionid", UserId = "323124fsddsadas" };
+        }
 
         Task<LocalProjectionModel> IBot.LoginWithApi(string username, string password, string sessionId)
         {
@@ -161,6 +242,11 @@ namespace BotsImpl
         }
 
         void IBot.ShutDown()
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<string> IBot.UploadImage(string sessionId, List<InstagramPartialModel> images, string url)
         {
             throw new NotImplementedException();
         }

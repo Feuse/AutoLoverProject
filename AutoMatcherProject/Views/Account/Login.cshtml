@@ -7,6 +7,7 @@
 <head>
     <link href="~/css/bootstrap-social.css" rel="stylesheet"> <!--load all styles -->
     <link href="~/css/bootstrap.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="~/css/css/myCss.css">
     <meta charset="utf-8">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/js/all.min.js">
@@ -20,16 +21,17 @@
                 <div class="card card-signin my-5">
                     <div class="card-body">
                         <h5 class="card-title text-center">Sign In</h5>
-                        <form asp-action="login" asp-route-returnUrl="@Model.ReturnUrl" class="form-signin">
+
+                        <form asp-action="login" asp-route-returnUrl="@Model.ReturnUrl" class="form-signin" autocomplete="off">
                             <div class="form-label-group">
-                                <input asp-for="Email" type="email" id="inputEmail" class="form-control" placeholder="Email address" required autofocus>
                                 <label asp-for="Email"></label>
+                                <input asp-for="Email" type="email" id="inputEmail" class="form-control" placeholder="Email address" autocomplete="off" required autofocus>
                                 <span asp-validation-for="Email"></span>
                             </div>
 
                             <div class="form-label-group">
-                                <input asp-for="Password" type="password" id="inputPassword" class="form-control" placeholder="Password" required>
                                 <label asp-for="Password"></label>
+                                <input asp-for="Password" type="text" id="inputPassword" class="form-control" placeholder="Password" inputmode="text" autocomplete="off" style="-webkit-text-security: disc;" required>
                                 <span asp-validation-for="Password"></span>
                             </div>
 
@@ -40,6 +42,7 @@
                                     @Html.DisplayNameFor(m=>m.RememberMe)
                                 </label>
                             </div>
+
                             <button class="btn btn-lg btn-primary btn-block stext-uppercase" type="submit">Sign in</button>
                             <hr class="my-4">
                         </form>

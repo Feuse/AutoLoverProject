@@ -15,7 +15,20 @@ namespace ServicesImpl
         {
             _httpContextAccessor = httpContextAccessor;
         }
+        public InstagramUserModel GetInstagramModel()
+        {
 
+            var token = _httpContextAccessor.HttpContext.Session.GetString("Token");
+            var userId = Convert.ToInt64(_httpContextAccessor.HttpContext.Session.GetString("UserId"));
+            InstagramUserModel model = new InstagramUserModel() { AccessToken = token, UserId = userId };
+            return model;
+        }
+        public void SaveInstagramModel(InstagramUserModel model)
+        {
+            _httpContextAccessor.HttpContext.Session.SetString("UserId", model.UserId.ToString());
+            _httpContextAccessor.HttpContext.Session.SetString("Token", model.AccessToken);
+
+        }
         public string GetUserId(Service service)
         {
             var userString = GetServiceUserIdName(service);
@@ -29,19 +42,38 @@ namespace ServicesImpl
             _httpContextAccessor.HttpContext.Response.Cookies.Append(userString, cookie.UserId, options);
         }
 
-        public void SetSession(Service service, CookieModel cookie)
+        public void SetCookieSession(Service service, CookieModel cookie)
         {
             var sessionString = GetServiceSessionName(service);
             _httpContextAccessor.HttpContext.Session.SetString(sessionString, cookie.SessionId);
         }
 
-        public string GetSession(Service service)
+
+        public string GetCookieSession(Service service)
         {
             var sessionString = GetServiceSessionName(service);
             var ss = _httpContextAccessor.HttpContext.Session.GetString(sessionString);
             return _httpContextAccessor.HttpContext.Session.GetString(sessionString);
         }
+        public void SetSession(string key, string value)
+        {
+            _httpContextAccessor.HttpContext.Session.SetString(key, value);
+        }
+        public string GetSession(string key)
+        {
+            return _httpContextAccessor.HttpContext.Session.GetString(key);
+        }
+        public void SetChangedDescriptionCount(string count, Service service)
+        {
+            var sessionString = GetServiceSessionName(service);
+            _httpContextAccessor.HttpContext.Session.SetString("DescriptionCounter" + sessionString, count);
+        }
+        public string GetChangedDescriptionCount(Service service)
+        {
+            var sessionString = GetServiceSessionName(service);
 
+            return _httpContextAccessor.HttpContext.Session.GetString("DescriptionCounter" + sessionString);
+        }
         /// <summary>
         /// Gets the external website session id.
         /// </summary>
@@ -96,6 +128,11 @@ namespace ServicesImpl
                     break;
             }
             throw new Exception("Session Service error");
+        }
+
+        public void ClearSession()
+        {
+            _httpContextAccessor.HttpContext.Session.Clear();
         }
     }
 }

@@ -114,9 +114,10 @@ namespace AutoMatcherProject.Controllers
         {
             var rediectUrl = Url.Action("ExternalLoginCallback", "Account", new { ReturnUrl = returnUrl });
             var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, rediectUrl);
-            var s = new ChallengeResult(provider, properties);
-            return s;
+   
+            return new ChallengeResult(provider, properties);
         }
+
         public async Task<IActionResult> ExternalLoginCallback(string returnUrl, string remoteError = null)
         {
             returnUrl ??= Url.Content("/Dashboard");

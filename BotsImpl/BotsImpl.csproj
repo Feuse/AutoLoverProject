@@ -6,12 +6,16 @@
 
   <ItemGroup>
 
+    <PackageReference Include="Moq" Version="4.14.5" />
+
     <PackageReference Include="Selenium.WebDriver" Version="3.141.0" />
     <PackageReference Include="Selenium.WebDriver.ChromeDriver" Version="84.0.4147.3001" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Interfaces\Interfaces.csproj" />
+    <ProjectReference Include="..\Models\Models.csproj" />
+    <ProjectReference Include="..\UtilModels\UtilModels.csproj" />
   </ItemGroup>
 
 </Project>

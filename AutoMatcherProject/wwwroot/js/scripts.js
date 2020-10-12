@@ -13,6 +13,18 @@ function flipService() {
 
 
 $(document).ready(function () {
+    $.ajax({
+        url: '/Actions/ClearSession',
+        method: 'POST',
+        dataType: 'text',
+        success: function () {
+
+        },
+        error: function () {
+
+        }
+    });
+
 
     $.ajax({
         url: '/Actions/GetUserServices',
@@ -20,7 +32,6 @@ $(document).ready(function () {
         dataType: 'json',
         success: function (data) {
             for (var i = 0; i < data.length; i++) {
-                document.getElementById("serviceName").innerHTML = data[i];
                 document.getElementById("serviceName").value = data[i];
             };
         },
@@ -206,6 +217,7 @@ function validateUser() {
                 dataType: 'json',
                 success: function (data) {
                     $.each(data, function (key, record) {
+                        console.log("11")
                         $('.userPictures').append('<div class="singleImage" data-id=' + record.photoId + '><img class= "img" src=' + record.previewUrl + '/><button class="dropdowncust butt fas fa-ellipsis-v"><div class="dropdown-contentcust"><div class="singleElement"><p>Change picture</p></div><div class="singleElement"><p>Delete picture</p></div><div class="singleElement"><p>Make private</p></div></div></button></div>');
                     });
                     $('.userPictures').append('<div class="addPicture"><div class="pictureSquare"><div class="camIcon"><i class="fas fa-camera fa-3x "></i><div class="addAPicture"><form id="formt" enctype="multipart/form-data"><input onchange="upload()" id="file" asp-for="Photo" type="file"/><input id="service2" asp-for="Service"/><i>Add a picture</i></form></div></div></div></div>');
@@ -219,7 +231,7 @@ function validateUser() {
 
                 },
                 error: function (error) {
-                    alert(error);
+                    alert(error, error, error);
                 }
             })
         },

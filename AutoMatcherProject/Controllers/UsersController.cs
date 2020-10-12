@@ -31,5 +31,10 @@ namespace AutoMatcherProject.Controllers
         {
             return View();
         }
+        [Authorize]
+        public IActionResult Instagram()
+        {
+            return View();
+        }
     }
 }

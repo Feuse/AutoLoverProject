@@ -19,12 +19,12 @@ namespace ConsumerScheduler
             _scheduler = QuartzInstance.Instance;
         }
 
-        public async Task StartSchedule(int messageId, int likes, Service service)
+        public async Task StartSchedule(int messageId, int likes, Service service,string userId)
         {
             var time = DateTime.UtcNow;
             UniqueId = Guid.NewGuid().ToString();
             IJobDetail job = JobBuilder.Create<ConsumerSchedulerJob>().WithIdentity(UniqueId, "consumer").Build();
-            job.JobDataMap.Put("message", new MessageWithoutUser { MessageId = messageId, UserId = UserId, Likes = likes, Time = time, Service = service });
+            job.JobDataMap.Put("message", new MessageWithoutUser { MessageId = messageId, UserId = userId, Likes = likes, Time = time, Service = service });
             ITrigger trigger = TriggerBuilder.Create().WithIdentity(UniqueId, "consumer")
                                                       .StartNow()
                                                       .Build();

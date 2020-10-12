@@ -3,6 +3,7 @@ using Autofac.Extras.Quartz;
 using BotsImpl;
 using ConsumerScheduler;
 using DbServices;
+using Factories;
 using Interfaces;
 
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -36,6 +37,7 @@ namespace RabbitMQListener.Installer
             builder.RegisterType<Application>().As<IApplication>();
             builder.RegisterType<RabbitMQImpl>().As<IListenerQueue>().SingleInstance();
             builder.RegisterType<BotFactory>().As<IBotFactory>();
+            builder.RegisterType<JsonFactory>().As<IJsonFactory>();
             var instance = QuartzInstance.Instance;
             builder.RegisterType<QueueImpl>().AsImplementedInterfaces();
             builder.RegisterType<ConsumerSchechuler>().AsImplementedInterfaces();

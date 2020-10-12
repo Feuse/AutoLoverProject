@@ -12,5 +12,6 @@ namespace Models
         public string PreviewUrl { get; set; }
         [Key]
         public string PhotoId { get; set; }
+        public Service Service { get; set; }
     }
 }

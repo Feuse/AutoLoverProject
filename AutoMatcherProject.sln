@@ -27,6 +27,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DbServices", "CredentialSav
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JobsImpl", "JobsImpl\JobsImpl.csproj", "{A6634867-59D0-4D33-9BFD-700EEF4C80FD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Factories", "Factories\Factories.csproj", "{E057331C-590A-4E5A-A6E8-5021535BED77}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UtilModels", "UtilModels\UtilModels.csproj", "{C0DC760B-971E-4A1D-BA31-B1934DED4E4E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -81,6 +85,14 @@ Global
 		{A6634867-59D0-4D33-9BFD-700EEF4C80FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A6634867-59D0-4D33-9BFD-700EEF4C80FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A6634867-59D0-4D33-9BFD-700EEF4C80FD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E057331C-590A-4E5A-A6E8-5021535BED77}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E057331C-590A-4E5A-A6E8-5021535BED77}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E057331C-590A-4E5A-A6E8-5021535BED77}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E057331C-590A-4E5A-A6E8-5021535BED77}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C0DC760B-971E-4A1D-BA31-B1934DED4E4E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C0DC760B-971E-4A1D-BA31-B1934DED4E4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C0DC760B-971E-4A1D-BA31-B1934DED4E4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C0DC760B-971E-4A1D-BA31-B1934DED4E4E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

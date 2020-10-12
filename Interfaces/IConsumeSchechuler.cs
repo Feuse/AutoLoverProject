@@ -6,6 +6,6 @@ namespace Interfaces
 {
     public interface IConsumeSchechuler
     {
-        public Task StartSchedule(int messageId, int likes, Service service);
+        public Task StartSchedule(int messageId, int likes, Service service, string userId);
     }
 }

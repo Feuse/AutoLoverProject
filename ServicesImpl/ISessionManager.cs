@@ -8,9 +8,9 @@ namespace ServicesImpl
         public string GetUserId(Service service);
         public void SetUserId(Service service, CookieModel cookie);
 
-        public void SetSession(Service service, CookieModel cookie);
+        public void SetCookieSession(Service service, CookieModel cookie);
 
-        public string GetSession(Service service);
+        public string GetCookieSession(Service service);
 
         /// <summary>
         /// Gets the external website session id.
@@ -21,6 +21,13 @@ namespace ServicesImpl
         public string GetExternalWebsiteSession(Service service, IWebDriver driver);
         public string GetServiceSessionName(Service service);
         public string GetServiceUserIdName(Service service);
+        public void SetSession(string key, string value);
+        public string GetSession(string key);
+        public void ClearSession();
+        public void SetChangedDescriptionCount(string count, Service service);
+        public string GetChangedDescriptionCount(Service service);
+        public InstagramUserModel GetInstagramModel();
+        public void SaveInstagramModel(InstagramUserModel model);
     }
 
 }

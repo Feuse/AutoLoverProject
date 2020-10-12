@@ -1,16 +1,22 @@
-﻿
-using Interfaces;
+﻿using Interfaces;
+using Microsoft.Extensions.Logging;
 using Models;
 using System;
 
 namespace BotsImpl
 {
     public class BotFactory : IBotFactory
-     {
-        private ICredentialDb _db;
-        public BotFactory(ICredentialDb db)
+    {
+        private ICredentialDb Db;
+        private IJsonFactory Factory;
+        private IMailer Mailer;
+        private ILogger<BadooBot> Logger;
+        public BotFactory(ICredentialDb db, IJsonFactory factory, IMailer mailer, ILogger<BadooBot> logger)
         {
-            _db = db;
+            Db = db;
+            Factory = factory;
+            Mailer = mailer;
+            Logger = logger;
         }
         public IBot GetBot(Service service)
         {
@@ -21,7 +27,9 @@ namespace BotsImpl
                 case Service.Grinder:
                     return new GrinderBot();
                 case Service.Badoo:
-                    return new BadooBot(_db);
+                    return new BadooBot(Db, Factory, Mailer, Logger);
+                case Service.Tinder:
+                    return new TinderBot(Db, Factory);
                 default:
                     break;
             }

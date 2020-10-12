@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Models
 {
-    public partial class AlbumResponseModel
+    public class AlbumResponseModel
     {
         [JsonProperty("$gpb")]
         public string Gpbff { get; set; }
@@ -35,7 +35,7 @@ namespace Models
         public string Vhost { get; set; }
     }
     [Newtonsoft.Json.JsonObject(Title = "body")]
-    public partial class BodyRespo
+    public class BodyRespo
     {
         [JsonProperty("$gpb")]
         public string Gpbgg { get; set; }
@@ -47,7 +47,7 @@ namespace Models
         public long MessageTypeRespons { get; set; }
     }
     [Newtonsoft.Json.JsonObject(Title = "album")]
-    public partial class Album
+    public class Album
     {
         [JsonProperty("$gpb")]
         public string Gpbs32 { get; set; }
@@ -89,7 +89,7 @@ namespace Models
         public long AlbumType { get; set; }
     }
     [Newtonsoft.Json.JsonObject(Title = "photo")]
-    public partial class Photo
+    public class Photo
     {
         [JsonProperty("$gpb")]
         public string Gpb4234 { get; set; }
@@ -104,7 +104,7 @@ namespace Models
         public string LargeUrl { get; set; }
 
         [JsonProperty("large_photo_size")]
-        public LargePhotoSize LargePhotoSize { get; set; }
+        public LargePhotoSizeAlbumResponseModel LargePhotoSize { get; set; }
 
         [JsonProperty("face_top_left", NullValueHandling = NullValueHandling.Ignore)]
         public Face55 FaceTopLeft { get; set; }
@@ -134,7 +134,7 @@ namespace Models
         public long LargeUrlExpirationTs { get; set; }
     }
     [Newtonsoft.Json.JsonObject(Title = "face")]
-    public partial class Face55
+    public class Face55
     {
         [JsonProperty("$gpb")]
         public string Gpb00 { get; set; }
@@ -146,7 +146,7 @@ namespace Models
         public long Y { get; set; }
     }
     [Newtonsoft.Json.JsonObject(Title = "large_photo_size")]
-    public partial class LargePhotoSize
+    public class LargePhotoSizeAlbumResponseModel
     {
         [JsonProperty("$gpb")]
         public string Gpb4343 { get; set; }

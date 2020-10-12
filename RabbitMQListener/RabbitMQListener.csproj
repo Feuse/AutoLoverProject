@@ -26,6 +26,7 @@
     <ProjectReference Include="..\BotsImpl\BotsImpl.csproj" />
     <ProjectReference Include="..\ConsumerScheduler\ConsumerScheduler.csproj" />
     <ProjectReference Include="..\CredentialSaver\DbServices.csproj" />
+    <ProjectReference Include="..\Factories\Factories.csproj" />
     <ProjectReference Include="..\Interfaces\Interfaces.csproj" />
     <ProjectReference Include="..\QueuesImpl\QueuesImpl.csproj" />
     <ProjectReference Include="..\ServicesImpl\ServicesImpl.csproj" />
