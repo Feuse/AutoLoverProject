@@ -440,8 +440,8 @@ namespace AutoMatcherProject.Controllers
             var code = Request.QueryString.Value.Remove(0, 6);
 
             var formVars = new Dictionary<string, string>();
-            formVars.Add("client_id", "346912513373650");
-            formVars.Add("client_secret", "7455bf4a5f09c4c9ef289eb292f9f522");
+            formVars.Add("client_id", "xxx);
+            formVars.Add("client_secret", "xxx);
             formVars.Add("code", code);
             formVars.Add("grant_type", "authorization_code");
             formVars.Add("redirect_uri", "https://localhost:49000/Actions/AccessTokenAuth");
